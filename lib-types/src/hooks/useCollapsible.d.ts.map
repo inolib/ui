@@ -1,0 +1,1 @@
+{"version":3,"file":"useCollapsible.d.ts","sourceRoot":"","sources":["../../../src/hooks/useCollapsible.ts"],"names":[],"mappings":"AAEA,KAAK,WAAW,GAAG,MAAM,IAAI,CAAC;AAC9B,KAAK,kBAAkB,GAAG,CAAC,UAAU,EAAE,WAAW,EAAE,UAAU,EAAE,WAAW,KAAK,IAAI,CAAC;AAQrF,eAAO,MAAM,cAAc;;;CA2B1B,CAAC"}

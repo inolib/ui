@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "files": [
+    "./.eslintrc.cjs",
+    "./.prettierrc.cjs",
+    "./vite.config.ts",
+    "./.config/.prettierrc.jsdoc.cjs",
+    "./.config/.prettierrc.jsxattribute-sort.cjs",
+    "./.config/.prettierrc.packagejson.cjs",
+    "./.config/.prettierrc.sort-imports.cjs"
+  ]
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"useExpandable.d.ts","sourceRoot":"","sources":["../../../src/hooks/useExpandable.ts"],"names":[],"mappings":"AAAA,OAAO,EAAK,MAAM,EAAE,MAAM,kBAAkB,CAAC;AAE7C,MAAM,MAAM,UAAU,GAAG;IACvB,UAAU,EAAE,OAAO,CAAC;IACpB,OAAO,EAAE,MAAM,CAAC,WAAW,GAAG,SAAS,CAAC,CAAC;CAC1C,CAAC;AAEF,eAAO,MAAM,aAAa,UAAW,UAAU;;;CAU9C,CAAC"}
