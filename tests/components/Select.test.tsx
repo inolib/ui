@@ -18,7 +18,7 @@ describe("Default state", () => {
         <SelectButton></SelectButton>
         <SelectOptionList>
           {people.map((person) => (
-            <SelectOption isDisabled={!person.available} key={person.id} value={person}>
+            <SelectOption disabled={!person.available} key={person.id} value={person}>
               {person.name}
             </SelectOption>
           ))}
@@ -33,11 +33,11 @@ describe("Disabling elements", () => {
     const { render, screen } = await createDOM();
 
     await render(
-      <Select isDisabled={true}>
+      <Select disabled={true}>
         <SelectButton></SelectButton>
         <SelectOptionList>
           {people.map((person) => (
-            <SelectOption isDisabled={!person.available} key={person.id} value={person}>
+            <SelectOption disabled={!person.available} key={person.id} value={person}>
               {person.name}
             </SelectOption>
           ))}
@@ -56,7 +56,7 @@ describe("Focus Management", () => {
         <SelectButton></SelectButton>
         <SelectOptionList>
           {people.map((person) => (
-            <SelectOption isDisabled={!person.available} key={person.id} value={person}>
+            <SelectOption disabled={!person.available} key={person.id} value={person}>
               {person.name}
             </SelectOption>
           ))}

@@ -1,4 +1,4 @@
-import { $, component$, Slot, useContext, useOn, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useOn, useSignal, useTask$ } from "@builder.io/qwik";
 
 import { SelectContext } from "~/components/select/Select";
 import { useComposite } from "~/hooks/useComposite";
@@ -8,20 +8,8 @@ type Props = {
   styles?: string;
 };
 
-type Store = {
-  useOn: {
-    mouseup: boolean;
-  };
-};
-
 export const SelectButton = component$<Props>(({ styles }) => {
   const ref = useSignal<HTMLElement>();
-
-  const _store: Store = {
-    useOn: {
-      mouseup: false,
-    },
-  };
 
   const store = useContext(SelectContext);
 
@@ -47,51 +35,48 @@ export const SelectButton = component$<Props>(({ styles }) => {
   );
 
   useOn(
-    "mousedown",
-    $(() => {
-      _store.useOn.mouseup = true;
-    })
-  );
-
-  useOn(
-    "mouseup",
+    "click",
     $(async (e) => {
       const event = e as MouseEvent;
 
-      if (_store.useOn.mouseup) {
-        if (event.button === 0) {
-          if (store.isExpanded) {
-            await collapse$();
-            await focus$(store.trigger);
-          } else {
-            await expand$();
-            await moveFocus$("first:selected");
-          }
+      if (event.detail > 0 && event.button === 0) {
+        if (store.expanded) {
+          await collapse$();
+          await focus$(store.trigger);
+        } else {
+          await expand$();
+          await moveFocus$("first:selected");
         }
-
-        _store.useOn.mouseup = false;
       }
     })
   );
 
-  useVisibleTask$(
-    () => {
-      store.focusable = ref;
-      store.trigger = ref;
-    },
-    { strategy: "document-ready" }
-  );
+  useTask$(() => {
+    store.focusable = ref;
+    store.trigger = ref;
+  });
 
   return (
     <button
-      aria-expanded={store.isExpanded}
-      disabled={store.isDisabled}
+      aria-controls={store.controls}
+      aria-expanded={store.expanded}
+      aria-haspopup="listbox"
+      disabled={store.disabled}
       ref={ref}
+      role="combobox"
       tabIndex={store.focusable === ref ? 0 : -1}
       type="button"
       {...(styles !== undefined ? { class: styles } : {})}
     >
-      <Slot />
+      {!store.multiple ? (
+        store.activated.length === 1 && store.activated[0].value !== undefined ? (
+          store.activated[0].value.innerHTML
+        ) : (
+          <Slot />
+        )
+      ) : (
+        <Slot />
+      )}
     </button>
   );
 });

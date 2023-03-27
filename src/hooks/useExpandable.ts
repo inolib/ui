@@ -1,17 +1,16 @@
-import { $, Signal } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
 
 export type Expandable = {
-  isExpanded: boolean;
-  trigger: Signal<HTMLElement | undefined>;
+  expanded: boolean;
 };
 
 export const useExpandable = (store: Expandable) => {
   const collapse$ = $(() => {
-    store.isExpanded = false;
+    store.expanded = false;
   });
 
   const expand$ = $(() => {
-    store.isExpanded = true;
+    store.expanded = true;
   });
 
   return { collapse$, expand$ };

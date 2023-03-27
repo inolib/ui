@@ -1,0 +1,1 @@
+{"version":3,"file":"useToggle.d.ts","sourceRoot":"","sources":["../../../src/hooks/useToggle.ts"],"names":[],"mappings":"AAAA,OAAO,EAAK,KAAK,MAAM,EAAE,MAAM,kBAAkB,CAAC;AAElD,eAAO,MAAM,SAAS;kDACI,OAAO,WAAW,GAAG,SAAS,CAAC,SAAS,MAAM;CAiCvE,CAAC"}

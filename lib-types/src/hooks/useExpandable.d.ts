@@ -1,7 +1,5 @@
-import { Signal } from "@builder.io/qwik";
 export type Expandable = {
-    isExpanded: boolean;
-    trigger: Signal<HTMLElement | undefined>;
+    expanded: boolean;
 };
 export declare const useExpandable: (store: Expandable) => {
     collapse$: import("@builder.io/qwik").QRL<() => void>;

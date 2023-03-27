@@ -1,20 +1,46 @@
-import { $, component$, Slot, useContext, useOn, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useOn, useSignal, useTask$, useVisibleTask$ } from "@builder.io/qwik";
+import { nanoid } from "nanoid";
 
 import { SelectContext } from "~/components/select/Select";
 import { useComposite } from "~/hooks/useComposite";
+import { useToggle } from "~/hooks/useToggle";
 
 type Props = {
-  isDisabled?: boolean;
+  disabled?: boolean;
+  selected?: boolean;
   styles?: string;
   value?: unknown;
 };
 
-export const SelectOption = component$<Props>(({ isDisabled = false, styles, value }) => {
+export const SelectOption = component$<Props>(({ disabled = false, selected = false, styles, value }) => {
+  const id = nanoid();
   const ref = useSignal<HTMLElement>();
 
   const store = useContext(SelectContext);
 
-  const { focus$, toggle$ } = useComposite(store);
+  const { focus$ } = useComposite(store);
+  const { toggle$ } = useToggle();
+
+  const doToggle$ = $(async () => {
+    if (!store.multiple && store.activated.length === 1 && store.activated[0] !== ref) {
+      await toggle$(store.activated[0], "selected");
+      store.activated.pop();
+    }
+
+    await toggle$(ref, "selected");
+
+    if (ref.value?.ariaSelected === "true") {
+      store.activated.push(ref);
+    } else {
+      const index = store.activated.indexOf(ref);
+
+      if (index >= 0) {
+        store.activated.splice(index, 1);
+      }
+    }
+
+    await focus$(ref);
+  });
 
   useOn(
     "keyup",
@@ -23,7 +49,7 @@ export const SelectOption = component$<Props>(({ isDisabled = false, styles, val
 
       switch (event.code) {
         case "Space": {
-          await toggle$(ref);
+          await doToggle$();
           break;
         }
       }
@@ -31,24 +57,41 @@ export const SelectOption = component$<Props>(({ isDisabled = false, styles, val
   );
 
   useOn(
-    "mouseup",
-    $(async () => {
-      await focus$(ref);
-      await toggle$(ref);
+    "click",
+    $(async (e) => {
+      const event = e as MouseEvent;
+
+      if (event.detail > 0) {
+        await doToggle$();
+      }
     })
   );
 
+  useTask$(() => {
+    if (selected) {
+      store.activated.push(ref);
+    }
+
+    store.navigables.push(ref);
+  });
+
   useVisibleTask$(
     () => {
-      store.navigables.push(ref);
+      if (selected) {
+        const element = ref.value;
+
+        if (element !== undefined) {
+          element.ariaSelected = "true";
+        }
+      }
     },
     { strategy: "document-ready" }
   );
 
   return (
     <li
-      aria-disabled={isDisabled}
-      {...(!isDisabled ? { "aria-selected": ref.value?.ariaSelected === "true" } : {})}
+      aria-disabled={disabled}
+      id={id}
       ref={ref}
       role="option"
       tabIndex={store.focusable === ref ? 0 : -1}

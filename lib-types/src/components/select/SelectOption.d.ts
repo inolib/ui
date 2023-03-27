@@ -1,5 +1,6 @@
 type Props = {
-    isDisabled?: boolean;
+    disabled?: boolean;
+    selected?: boolean;
     styles?: string;
     value?: unknown;
 };

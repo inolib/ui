@@ -1,4 +1,5 @@
-import { $, component$, Slot, useContext, useOn } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useOn, useTask$ } from "@builder.io/qwik";
+import { nanoid } from "nanoid";
 
 import { SelectContext } from "~/components/select/Select";
 import { useComposite } from "~/hooks/useComposite";
@@ -8,6 +9,8 @@ type Props = {
 };
 
 export const SelectOptionList = component$<Props>(({ styles }) => {
+  const id = nanoid();
+
   const store = useContext(SelectContext);
 
   const { moveFocus$ } = useComposite(store);
@@ -27,14 +30,33 @@ export const SelectOptionList = component$<Props>(({ styles }) => {
           await moveFocus$("previous");
           break;
         }
+
+        case "End": {
+          await moveFocus$("last");
+          break;
+        }
+
+        case "Home": {
+          await moveFocus$("first");
+          break;
+        }
       }
     })
   );
 
+  useTask$(() => {
+    store.controls = id;
+  });
+
   return (
     <>
-      {store.isExpanded ? (
-        <ul aria-multiselectable={store.isMultiple} role="listbox" {...(styles !== undefined ? { class: styles } : {})}>
+      {store.expanded ? (
+        <ul
+          aria-multiselectable={store.multiple}
+          id={id}
+          role="listbox"
+          {...(styles !== undefined ? { class: styles } : {})}
+        >
           <Slot />
         </ul>
       ) : null}
