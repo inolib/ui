@@ -42,7 +42,7 @@ export const SelectButton = component$<Props>(({ styles }) => {
       if (event.detail > 0 && event.button === 0) {
         if (store.expanded) {
           await collapse$();
-          await focus$(store.trigger);
+          await focus$(ref);
         } else {
           await expand$();
           await moveFocus$("first:selected");
