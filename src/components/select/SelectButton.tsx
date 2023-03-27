@@ -69,8 +69,8 @@ export const SelectButton = component$<Props>(({ styles }) => {
       {...(styles !== undefined ? { class: styles } : {})}
     >
       {!store.multiple ? (
-        store.activated.length === 1 && store.activated[0].value !== undefined ? (
-          store.activated[0].value.innerHTML
+        store.activated.length === 1 && store.activated[0].ref.value !== undefined ? (
+          store.activated[0].ref.value.innerHTML
         ) : (
           <Slot />
         )

@@ -1,6 +1,7 @@
 import { $, component$, Slot, useContext, useOn, useSignal, useTask$, useVisibleTask$ } from "@builder.io/qwik";
+import { nanoid } from "nanoid";
 
-import { SelectContext } from "~/components/select/Select";
+import { SelectContext, type Value } from "~/components/select/Select";
 import { useComposite } from "~/hooks/useComposite";
 import { useToggle } from "~/hooks/useToggle";
 
@@ -8,10 +9,11 @@ type Props = {
   disabled?: boolean;
   selected?: boolean;
   styles?: string;
-  value?: unknown;
+  value?: Value;
 };
 
-export const SelectOption = component$<Props>(({ disabled = false, selected = false, styles, value }) => {
+export const SelectOption = component$<Props>(({ disabled = false, selected = false, styles, value = "" }) => {
+  const id = nanoid();
   const ref = useSignal<HTMLElement>();
 
   const store = useContext(SelectContext);
@@ -19,19 +21,21 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
   const { focus$ } = useComposite(store);
   const { toggle$ } = useToggle();
 
-  if (!disabled) {
+  const _disabled = store.disabled || disabled;
+
+  if (!_disabled && !store.readonly) {
     const doToggle$ = $(async () => {
-      if (!store.multiple && store.activated.length === 1 && store.activated[0] !== ref) {
-        await toggle$(store.activated[0], "selected");
+      if (!store.multiple && store.activated.length === 1 && store.activated[0].ref !== ref) {
+        await toggle$(store.activated[0].ref, "selected");
         store.activated.pop();
       }
 
       await toggle$(ref, "selected");
 
       if (ref.value?.ariaSelected === "true") {
-        store.activated.push(ref);
+        store.activated.push({ id, ref, value });
       } else {
-        const index = store.activated.indexOf(ref);
+        const index = store.activated.findIndex((option) => option.ref === ref);
 
         if (index >= 0) {
           store.activated.splice(index, 1);
@@ -68,11 +72,7 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
   }
 
   useTask$(() => {
-    if (selected) {
-      store.activated.push(ref);
-    }
-
-    if (!disabled) {
+    if (!_disabled) {
       store.navigables.push(ref);
     }
   });
@@ -85,6 +85,8 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
         if (element !== undefined) {
           element.ariaSelected = "true";
         }
+
+        store.activated.push({ id, ref, value });
       }
     },
     { strategy: "document-ready" }
@@ -92,7 +94,7 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
 
   return (
     <li
-      aria-disabled={disabled}
+      aria-disabled={_disabled}
       ref={ref}
       role="option"
       tabIndex={store.focusable === ref ? 0 : -1}

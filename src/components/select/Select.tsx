@@ -20,19 +20,22 @@ type Props = {
   readonly?: boolean;
   required?: boolean;
   styles?: string;
-  value?: unknown;
+  value?: Value;
 };
 
 type Ref = Signal<HTMLElement | undefined>;
 
 type Store = Composite &
   Expandable & {
-    activated: Array<Ref>;
+    activated: Array<{ id: string; ref: Ref; value: Value }>;
     controls: string;
     disabled: boolean;
     multiple: boolean;
+    readonly: boolean;
     trigger: Ref;
   };
+
+export type Value = string | Record<string, boolean | number | string>;
 
 export const SelectContext = createContextId<Store>("inolib/ui/contexts/Select");
 
@@ -47,6 +50,7 @@ export const Select = component$<Props>(
         expanded: false,
         multiple,
         navigables: [],
+        readonly,
         trigger: useSignal<HTMLElement>(),
       },
       { deep: true }
@@ -75,6 +79,28 @@ export const Select = component$<Props>(
     return (
       <div {...(styles !== undefined ? { class: styles } : {})}>
         <Slot />
+
+        {name !== undefined
+          ? store.activated.map((option) =>
+              typeof option.value === "string" ? (
+                <input
+                  key={option.id}
+                  name={`${name}${multiple ? "[]" : ""}`}
+                  type="hidden"
+                  value={`${option.value}`}
+                />
+              ) : (
+                Object.entries(option.value).map((kv) => (
+                  <input
+                    key={option.id}
+                    name={`${name}${multiple ? "[]" : ""}[${kv[0]}]`}
+                    type="hidden"
+                    value={`${kv[1] as string}`}
+                  />
+                ))
+              )
+            )
+          : null}
       </div>
     );
   }
