@@ -16,7 +16,15 @@ type Disableable =
 
 type Ref = Signal<HTMLElement | undefined>;
 
+type Store = {
+  focusable: Ref;
+};
+
 export const useComposite = (store: Composite) => {
+  const _store: Store = {
+    focusable: store.focusable,
+  };
+
   const focus$ = $(async (ref: Ref, from = "next") => {
     const whenDisabled = async (from: string) => {
       switch (from) {
@@ -56,7 +64,7 @@ export const useComposite = (store: Composite) => {
 
     const element = ref.value;
 
-    store.focusable = ref;
+    _store.focusable = ref;
 
     switch (element?.tagName) {
       case "BUTTON":
@@ -82,6 +90,7 @@ export const useComposite = (store: Composite) => {
       }
     }
 
+    store.focusable = _store.focusable;
     element?.focus();
   });
 
@@ -151,7 +160,7 @@ export const useComposite = (store: Composite) => {
       }
 
       case "next": {
-        const index = store.navigables.indexOf(store.focusable);
+        const index = store.navigables.indexOf(_store.focusable);
 
         if (0 <= index && index <= store.navigables.length - 2) {
           await focus$(store.navigables[index + 1], to);
@@ -163,7 +172,7 @@ export const useComposite = (store: Composite) => {
       case "next:checked":
       case "next:pressed":
       case "next:selected": {
-        const navigables = store.navigables.slice(store.navigables.indexOf(store.focusable) + 1);
+        const navigables = store.navigables.slice(store.navigables.indexOf(_store.focusable) + 1);
         const index = navigables.findIndex(predicate(to));
 
         if (index >= 0) {
@@ -174,7 +183,7 @@ export const useComposite = (store: Composite) => {
       }
 
       case "previous": {
-        const index = store.navigables.lastIndexOf(store.focusable);
+        const index = store.navigables.lastIndexOf(_store.focusable);
 
         if (index >= 1) {
           await focus$(store.navigables[index - 1], to);
@@ -186,7 +195,7 @@ export const useComposite = (store: Composite) => {
       case "previous:checked":
       case "previous:pressed":
       case "previous:selected": {
-        const navigables = store.navigables.slice(0, store.navigables.lastIndexOf(store.focusable));
+        const navigables = store.navigables.slice(0, store.navigables.lastIndexOf(_store.focusable));
         const index = navigables.findLastIndex(predicate(to));
 
         if (index >= 0) {

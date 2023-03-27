@@ -1,5 +1,4 @@
 import { $, component$, Slot, useContext, useOn, useSignal, useTask$, useVisibleTask$ } from "@builder.io/qwik";
-import { nanoid } from "nanoid";
 
 import { SelectContext } from "~/components/select/Select";
 import { useComposite } from "~/hooks/useComposite";
@@ -13,7 +12,6 @@ type Props = {
 };
 
 export const SelectOption = component$<Props>(({ disabled = false, selected = false, styles, value }) => {
-  const id = nanoid();
   const ref = useSignal<HTMLElement>();
 
   const store = useContext(SelectContext);
@@ -91,7 +89,6 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
   return (
     <li
       aria-disabled={disabled}
-      id={id}
       ref={ref}
       role="option"
       tabIndex={store.focusable === ref ? 0 : -1}
