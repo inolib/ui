@@ -49,17 +49,27 @@ export const SelectOptionList = component$<Props>(({ styles }) => {
   });
 
   return (
-    <>
-      {store.expanded ? (
-        <ul
-          aria-multiselectable={store.multiple}
-          id={id}
-          role="listbox"
-          {...(styles !== undefined ? { class: styles } : {})}
-        >
-          <Slot />
-        </ul>
-      ) : null}
-    </>
+    <ul
+      aria-multiselectable={store.multiple}
+      hidden={!store.expanded}
+      id={id}
+      role="listbox"
+      {...(styles !== undefined ? { class: styles } : {})}
+    >
+      <Slot />
+    </ul>
+
+    // <>
+    //   {store.expanded ? (
+    //     <ul
+    //       aria-multiselectable={store.multiple}
+    //       id={id}
+    //       role="listbox"
+    //       {...(styles !== undefined ? { class: styles } : {})}
+    //     >
+    //       <Slot />
+    //     </ul>
+    //   ) : null}
+    // </>
   );
 });

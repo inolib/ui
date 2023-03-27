@@ -19,58 +19,62 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
   const { focus$ } = useComposite(store);
   const { toggle$ } = useToggle();
 
-  const doToggle$ = $(async () => {
-    if (!store.multiple && store.activated.length === 1 && store.activated[0] !== ref) {
-      await toggle$(store.activated[0], "selected");
-      store.activated.pop();
-    }
-
-    await toggle$(ref, "selected");
-
-    if (ref.value?.ariaSelected === "true") {
-      store.activated.push(ref);
-    } else {
-      const index = store.activated.indexOf(ref);
-
-      if (index >= 0) {
-        store.activated.splice(index, 1);
+  if (!disabled) {
+    const doToggle$ = $(async () => {
+      if (!store.multiple && store.activated.length === 1 && store.activated[0] !== ref) {
+        await toggle$(store.activated[0], "selected");
+        store.activated.pop();
       }
-    }
 
-    await focus$(ref);
-  });
+      await toggle$(ref, "selected");
 
-  useOn(
-    "keyup",
-    $(async (e) => {
-      const event = e as KeyboardEvent;
+      if (ref.value?.ariaSelected === "true") {
+        store.activated.push(ref);
+      } else {
+        const index = store.activated.indexOf(ref);
 
-      switch (event.code) {
-        case "Space": {
-          await doToggle$();
-          break;
+        if (index >= 0) {
+          store.activated.splice(index, 1);
         }
       }
-    })
-  );
 
-  useOn(
-    "click",
-    $(async (e) => {
-      const event = e as MouseEvent;
+      await focus$(ref);
+    });
 
-      if (event.detail > 0) {
-        await doToggle$();
-      }
-    })
-  );
+    useOn(
+      "keyup",
+      $(async (e) => {
+        const event = e as KeyboardEvent;
+
+        switch (event.code) {
+          case "Space": {
+            await doToggle$();
+            break;
+          }
+        }
+      })
+    );
+
+    useOn(
+      "click",
+      $(async (e) => {
+        const event = e as MouseEvent;
+
+        if (event.detail > 0) {
+          await doToggle$();
+        }
+      })
+    );
+  }
 
   useTask$(() => {
     if (selected) {
       store.activated.push(ref);
     }
 
-    store.navigables.push(ref);
+    if (!disabled) {
+      store.navigables.push(ref);
+    }
   });
 
   useVisibleTask$(

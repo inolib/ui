@@ -5,7 +5,7 @@ export type Composite = {
 };
 type Ref = Signal<HTMLElement | undefined>;
 export declare const useComposite: (store: Composite) => {
-    focus$: import("@builder.io/qwik").QRL<(ref: Ref, from?: string) => Promise<void>>;
+    focus$: import("@builder.io/qwik").QRL<(ref: Ref) => void>;
     moveFocus$: import("@builder.io/qwik").QRL<(to: string) => Promise<void>>;
 };
 export {};
