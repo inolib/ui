@@ -48,8 +48,12 @@ export const MenuItemList = component$<Props>(({ styles }) => {
   });
 
   return (
-    <ul hidden={!store.expanded} id={id} {...(styles !== undefined ? { class: styles } : {})}>
-      <Slot />
-    </ul>
+    <>
+      {store.expanded ? (
+        <ul id={id} class={styles}>
+          <Slot />
+        </ul>
+      ) : null}
+    </>
   );
 });
