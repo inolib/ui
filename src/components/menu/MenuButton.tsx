@@ -4,7 +4,11 @@ import { MenuContext } from "~/components/menu/Menu";
 import { useComposite } from "~/hooks/useComposite";
 import { useExpandable } from "~/hooks/useExpandable";
 
-export const MenuButton = component$(() => {
+type Props = {
+  styles?: string;
+};
+
+export const MenuButton = component$<Props>(({ styles }) => {
   const ref = useSignal<HTMLElement>();
 
   const store = useContext(MenuContext);
@@ -38,18 +42,27 @@ export const MenuButton = component$(() => {
           await focus$(ref);
         } else {
           await expand$();
-          await moveFocus$("first:selected");
+          await moveFocus$("first");
         }
       }
     })
   );
 
   useTask$(() => {
+    store.focusable = ref;
     store.trigger = ref;
   });
 
   return (
-    <button ref={ref}>
+    <button
+      aria-controls={store.controls}
+      aria-expanded={store.expanded}
+      ref={ref}
+      role="menu"
+      tabIndex={store.focusable === ref ? 0 : -1}
+      type="button"
+      {...(styles !== undefined ? { class: styles } : {})}
+    >
       <Slot />
     </button>
   );

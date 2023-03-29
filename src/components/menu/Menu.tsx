@@ -13,16 +13,29 @@ import {
 import { useComposite, type Composite } from "~/hooks/useComposite";
 import { useExpandable, type Expandable } from "~/hooks/useExpandable";
 
+type Props = {
+  styles?: string;
+  value?: Value;
+};
+
+type Ref = Signal<HTMLElement | undefined>;
+
 type Store = Composite &
   Expandable & {
-    trigger: Signal<HTMLElement | undefined>;
+    activated: Array<{ id: string; ref: Ref; value: Value }>;
+    controls: string;
+    trigger: Ref;
   };
+
+export type Value = string | Record<string, boolean | number | string>;
 
 export const MenuContext = createContextId<Store>("inolib/ui/contexts/Menu");
 
-export const Menu = component$(() => {
+export const Menu = component$<Props>(({ styles }) => {
   const store = useStore<Store>(
     {
+      activated: [],
+      controls: "",
       expanded: false,
       focusable: useSignal<HTMLElement>(),
       navigables: [],
@@ -52,7 +65,7 @@ export const Menu = component$(() => {
   );
 
   return (
-    <div role="menu">
+    <div {...(styles !== undefined ? { class: styles } : {})}>
       <Slot />
     </div>
   );
