@@ -1,18 +1,25 @@
-import { $, component$, Slot, useContext, useOn, useTask$ } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useOn, useStore, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { MenuContext } from "~/components/Menu/Menu";
-import { useComposite } from "~/hooks/useComposite";
+import { contextId, moveFocusQrl } from "~/components/Menu/Menu";
 
-type Props = {
-  styles?: string;
+type MenuItemListProps = {
+  readonly styles?: string;
 };
 
-export const MenuItemList = component$<Props>(({ styles }) => {
-  const store = useContext(MenuContext);
-  const id = nanoid();
+export type MenuItemListStore = {
+  readonly id: string;
+};
 
-  const { moveFocus$ } = useComposite(store);
+export const MenuItemList = component$<MenuItemListProps>(({ styles }) => {
+  const context = useContext(contextId);
+
+  const store = useStore<MenuItemListStore>(
+    {
+      id: nanoid(),
+    },
+    { deep: true }
+  );
 
   useOn(
     "keyup",
@@ -21,22 +28,22 @@ export const MenuItemList = component$<Props>(({ styles }) => {
 
       switch (event.code) {
         case "ArrowDown": {
-          await moveFocus$("next");
+          await moveFocusQrl(context, "next");
           break;
         }
 
         case "ArrowUp": {
-          await moveFocus$("previous");
+          await moveFocusQrl(context, "previous");
           break;
         }
 
         case "End": {
-          await moveFocus$("last");
+          await moveFocusQrl(context, "last");
           break;
         }
 
         case "Home": {
-          await moveFocus$("first");
+          await moveFocusQrl(context, "first");
           break;
         }
       }
@@ -44,13 +51,13 @@ export const MenuItemList = component$<Props>(({ styles }) => {
   );
 
   useTask$(() => {
-    store.controls = id;
+    context.MenuItemList = store;
   });
 
   return (
     <>
-      {store.expanded ? (
-        <ul class={styles} id={id}>
+      {context.MenuButton?.expanded ? (
+        <ul class={styles} id={store.id}>
           <Slot />
         </ul>
       ) : null}
