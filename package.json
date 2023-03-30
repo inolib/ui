@@ -18,7 +18,7 @@
     "./lib-types"
   ],
   "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:types",
+    "build": "pnpm run build:types && pnpm run build:lib",
     "build:lib": "vite build --mode lib",
     "build:types": "tsc",
     "ci:build": "pnpm run build",
@@ -41,11 +41,13 @@
   "devDependencies": {
     "@builder.io/qwik": "^0.24.0",
     "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
-    "@types/node": "^18.15.10",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
-    "@vitest/coverage-c8": "^0.29.7",
-    "eslint": "^8.36.0",
+    "@testing-library/dom": "^9.2.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
+    "@vitest/coverage-c8": "^0.29.8",
+    "eslint": "^8.37.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-qwik": "^0.24.0",
     "nanoid": "^3.3.6",
@@ -56,8 +58,5 @@
     "typescript": "^5.0.2",
     "vite": "^4.2.1",
     "vitest": "^0.29.7"
-  },
-  "dependencies": {
-    "@inolib/ui": "^0.0.0"
   }
 }
