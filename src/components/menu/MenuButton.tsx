@@ -1,6 +1,6 @@
 import { $, component$, Slot, useContext, useOn, useSignal, useTask$ } from "@builder.io/qwik";
 
-import { MenuContext } from "~/components/menu/Menu";
+import { MenuContext } from "~/components/Menu/Menu";
 import { useComposite } from "~/hooks/useComposite";
 import { useExpandable } from "~/hooks/useExpandable";
 

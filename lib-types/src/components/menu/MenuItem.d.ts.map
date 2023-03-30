@@ -1,1 +1,1 @@
-{"version":3,"file":"MenuItem.d.ts","sourceRoot":"","sources":["../../../../src/components/menu/MenuItem.tsx"],"names":[],"mappings":"AAIA,KAAK,KAAK,GAAG;IACX,MAAM,CAAC,EAAE,MAAM,CAAC;IAChB,IAAI,CAAC,EAAE,MAAM,CAAC;CACf,CAAC;AAEF,eAAO,MAAM,QAAQ,6CAmBnB,CAAC"}
+{"version":3,"file":"MenuItem.d.ts","sourceRoot":"","sources":["../../../../src/components/Menu/MenuItem.tsx"],"names":[],"mappings":"AAIA,KAAK,KAAK,GAAG;IACX,MAAM,CAAC,EAAE,MAAM,CAAC;IAChB,IAAI,CAAC,EAAE,MAAM,CAAC;CACf,CAAC;AAEF,eAAO,MAAM,QAAQ,6CAmBnB,CAAC"}

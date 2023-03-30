@@ -1,19 +1,44 @@
-import { $, component$, Slot, useContext, useOn, useTask$ } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useOn, useStore, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { SelectContext } from "~/components/select/Select";
-import { useComposite } from "~/hooks/useComposite";
+import { contextId, moveFocusQrl } from "~/components/Select/Select";
 
-type Props = {
-  styles?: string;
+type SelectOptionListProps = {
+  readonly styles?: string;
 };
 
-export const SelectOptionList = component$<Props>(({ styles }) => {
-  const id = nanoid();
+export type SelectOptionListStore = {
+  readonly id: string;
+};
 
-  const store = useContext(SelectContext);
+export const SelectOptionList = component$<SelectOptionListProps>(({ styles }) => {
+  const context = useContext(contextId);
 
-  const { moveFocus$ } = useComposite(store);
+  const store = useStore<SelectOptionListStore>(
+    {
+      id: nanoid(),
+    },
+    { deep: true }
+  );
+
+  useOn(
+    "keydown",
+    $(async (e) => {
+      const event = e as KeyboardEvent;
+
+      switch (event.code) {
+        case "ArrowDown": {
+          await moveFocusQrl(context, "next");
+          break;
+        }
+
+        case "ArrowUp": {
+          await moveFocusQrl(context, "previous");
+          break;
+        }
+      }
+    })
+  );
 
   useOn(
     "keyup",
@@ -21,23 +46,13 @@ export const SelectOptionList = component$<Props>(({ styles }) => {
       const event = e as KeyboardEvent;
 
       switch (event.code) {
-        case "ArrowDown": {
-          await moveFocus$("next");
-          break;
-        }
-
-        case "ArrowUp": {
-          await moveFocus$("previous");
-          break;
-        }
-
         case "End": {
-          await moveFocus$("last");
+          await moveFocusQrl(context, "last");
           break;
         }
 
         case "Home": {
-          await moveFocus$("first");
+          await moveFocusQrl(context, "first");
           break;
         }
       }
@@ -45,31 +60,23 @@ export const SelectOptionList = component$<Props>(({ styles }) => {
   );
 
   useTask$(() => {
-    store.controls = id;
+    context.SelectOptionList = store;
   });
 
   return (
-    <ul
-      aria-multiselectable={store.multiple}
-      hidden={!store.expanded}
-      id={id}
-      role="listbox"
-      {...(styles !== undefined ? { class: styles } : {})}
-    >
-      <Slot />
-    </ul>
-
-    // <>
-    //   {store.expanded ? (
-    //     <ul
-    //       aria-multiselectable={store.multiple}
-    //       id={id}
-    //       role="listbox"
-    //       {...(styles !== undefined ? { class: styles } : {})}
-    //     >
-    //       <Slot />
-    //     </ul>
-    //   ) : null}
-    // </>
+    <>
+      {context.SelectButton?.expanded ? (
+        <ul
+          aria-multiselectable={context.Select.multiple}
+          class={styles}
+          id={store.id}
+          preventdefault:keydown
+          preventdefault:keyup
+          role="listbox"
+        >
+          <Slot />
+        </ul>
+      ) : null}
+    </>
   );
 });

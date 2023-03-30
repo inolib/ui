@@ -1,20 +1,42 @@
-import { $, component$, Slot, useContext, useOn, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  $,
+  component$,
+  Slot,
+  useContext,
+  useOn,
+  useSignal,
+  useStore,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 
-import { SelectContext } from "~/components/select/Select";
-import { useComposite } from "~/hooks/useComposite";
-import { useExpandable } from "~/hooks/useExpandable";
+import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "~/components/Select/Select";
+import { useTab } from "~/hooks/useTab";
+import type { Reference } from "~/types";
 
-type Props = {
-  styles?: string;
+type SelectButtonProps = {
+  readonly styles?: string;
 };
 
-export const SelectButton = component$<Props>(({ styles }) => {
-  const ref = useSignal<HTMLElement>();
+export type SelectButtonStore = {
+  expanded: boolean;
+  readonly ref: Reference;
+  slot: string;
+};
 
-  const store = useContext(SelectContext);
+export const SelectButton = component$<SelectButtonProps>(({ styles }) => {
+  const context = useContext(contextId);
 
-  const { focus$, moveFocus$ } = useComposite(store);
-  const { collapse$, expand$ } = useExpandable(store);
+  const store = useStore<SelectButtonStore>(
+    {
+      expanded: false,
+      ref: useSignal<HTMLElement>(),
+      slot: "",
+    },
+    { deep: true }
+  );
+
+  useTab(store.ref);
 
   useOn(
     "keyup",
@@ -26,8 +48,8 @@ export const SelectButton = component$<Props>(({ styles }) => {
         case "ArrowUp":
         case "Enter":
         case "Space": {
-          await expand$();
-          await moveFocus$(event.code !== "ArrowUp" ? "first:selected" : "last:selected");
+          await expandQrl(context);
+          await moveFocusQrl(context, event.code !== "ArrowUp" ? "first:selected" : "last:selected");
           break;
         }
       }
@@ -41,42 +63,46 @@ export const SelectButton = component$<Props>(({ styles }) => {
 
       if (event.detail > 0 && event.button === 0) {
         if (store.expanded) {
-          await collapse$();
-          await focus$(ref);
+          await collapseQrl(context);
+          await focusQrl(context, store.ref);
         } else {
-          await expand$();
-          await moveFocus$("first:selected");
+          await expandQrl(context);
+          await moveFocusQrl(context, "first:selected");
         }
       }
     })
   );
 
   useTask$(() => {
-    store.focusable = ref;
-    store.trigger = ref;
+    context.SelectButton = store;
+    context.Select.focusable = store.ref;
   });
+
+  useVisibleTask$(
+    () => {
+      if (store.ref.value !== undefined) {
+        store.slot = store.ref.value.innerHTML;
+      }
+    },
+    { strategy: "document-ready" }
+  );
 
   return (
     <button
-      aria-controls={store.controls}
+      aria-controls={context.SelectOptionList?.id}
       aria-expanded={store.expanded}
       aria-haspopup="listbox"
-      disabled={store.disabled}
-      ref={ref}
+      class={styles}
+      disabled={context.Select.disabled}
+      preventdefault:click
+      preventdefault:keydown
+      preventdefault:keyup
+      ref={store.ref}
       role="combobox"
-      tabIndex={store.focusable === ref ? 0 : -1}
+      tabIndex={store.ref === context.Select.focusable ? 0 : -1}
       type="button"
-      {...(styles !== undefined ? { class: styles } : {})}
     >
-      {!store.multiple ? (
-        store.activated.length === 1 && store.activated[0].ref.value !== undefined ? (
-          store.activated[0].ref.value.innerHTML
-        ) : (
-          <Slot />
-        )
-      ) : (
-        <Slot />
-      )}
+      <Slot />
     </button>
   );
 });

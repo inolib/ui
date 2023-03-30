@@ -7,59 +7,161 @@ import {
   useOn,
   useSignal,
   useStore,
-  type Signal,
+  useVisibleTask$,
+  type QRL,
 } from "@builder.io/qwik";
 
-import { useComposite, type Composite } from "~/hooks/useComposite";
-import { useExpandable, type Expandable } from "~/hooks/useExpandable";
+import { type SelectButtonStore } from "~/components/Select/SelectButton";
+import { type SelectOptionStore } from "~/components/Select/SelectOption";
+import { type SelectOptionListStore } from "~/components/Select/SelectOptionList";
+import type { JSON, Reference } from "~/types";
 
-type Props = {
-  disabled?: boolean;
-  multiple?: boolean;
-  name?: string;
-  readonly?: boolean;
-  required?: boolean;
-  styles?: string;
-  value?: Value;
+export type SelectContext = {
+  Select: SelectStore;
+  SelectButton?: SelectButtonStore;
+  SelectOptionList?: SelectOptionListStore;
+  SelectOption?: SelectOptionStore[];
 };
 
-type Ref = Signal<HTMLElement | undefined>;
+type SelectProps = {
+  readonly disabled?: boolean;
+  readonly multiple?: boolean;
+  readonly name?: string;
+  readonly onChange$?: QRL<(value: string | undefined) => void>;
+  readonly readonly?: boolean;
+  readonly required?: boolean;
+  readonly styles?: string;
+};
 
-type Store = Composite &
-  Expandable & {
-    activated: Array<{ id: string; ref: Ref; value: Value }>;
-    controls: string;
-    disabled: boolean;
-    multiple: boolean;
-    readonly: boolean;
-    trigger: Ref;
+type SelectStore = Pick<Required<SelectProps>, "disabled" | "multiple" | "readonly"> & {
+  focusable: Reference;
+  stringified?: string | undefined;
+  value: JSON | undefined;
+};
+
+export const collapseQrl = $((context: SelectContext) => {
+  if (context.SelectButton !== undefined) {
+    context.SelectButton.expanded = false;
+  }
+});
+
+export const expandQrl = $((context: SelectContext) => {
+  if (context.SelectButton !== undefined) {
+    context.SelectButton.expanded = true;
+  }
+});
+
+export const focusQrl = $((context: SelectContext, ref: Reference) => {
+  const element = ref.value;
+
+  if (element !== undefined) {
+    context.Select.focusable = ref;
+    element.focus();
+  }
+});
+
+export const moveFocusQrl = $(async (context: SelectContext, to: string) => {
+  const predicate = (to: string) => {
+    switch (to) {
+      case "first:selected":
+      case "last:selected": {
+        return (option: SelectOptionStore) => option.selected;
+      }
+
+      case "next":
+      case "previous": {
+        return (option: SelectOptionStore) => option.ref === context.Select.focusable;
+      }
+    }
+
+    return () => false;
   };
 
-export type Value = string | Record<string, boolean | number | string>;
+  if (context.SelectOption !== undefined) {
+    const _SelectOption = context.SelectOption.filter((option: SelectOptionStore) => !option.disabled);
 
-export const SelectContext = createContextId<Store>("inolib/ui/contexts/Select");
+    switch (to) {
+      case "first": {
+        if (_SelectOption.length > 0) {
+          await focusQrl(context, _SelectOption[0].ref);
+        }
+        break;
+      }
 
-export const Select = component$<Props>(
-  ({ disabled = false, multiple = false, name, readonly = false, required = false, styles, value }) => {
-    const store = useStore<Store>(
+      case "first:selected": {
+        const option = _SelectOption.find(predicate(to));
+
+        if (option !== undefined) {
+          await focusQrl(context, option.ref);
+        } else {
+          await moveFocusQrl(context, "first");
+        }
+
+        break;
+      }
+
+      case "last": {
+        if (_SelectOption.length > 0) {
+          await focusQrl(context, _SelectOption[_SelectOption.length - 1].ref);
+        }
+        break;
+      }
+
+      case "last:selected": {
+        const option = _SelectOption.findLast(predicate(to));
+
+        if (option !== undefined) {
+          await focusQrl(context, option.ref);
+        } else {
+          await moveFocusQrl(context, "last");
+        }
+
+        break;
+      }
+
+      case "next": {
+        const index = _SelectOption.findIndex(predicate(to));
+
+        if (index > -1 && index < _SelectOption.length - 1) {
+          await focusQrl(context, _SelectOption[index + 1].ref);
+        }
+
+        break;
+      }
+
+      case "previous": {
+        const index = _SelectOption.findLastIndex(predicate(to));
+
+        if (index > 0) {
+          await focusQrl(context, _SelectOption[index - 1].ref);
+        }
+
+        break;
+      }
+    }
+  }
+});
+
+export const contextId = createContextId<SelectContext>("inolib/ui/contexts/Select");
+
+export const Select = component$<SelectProps>(
+  ({ disabled = false, multiple = false, name, onChange$, readonly = false, required = false, styles }) => {
+    const store = useStore<SelectStore>(
       {
-        activated: [],
-        controls: "",
         disabled,
         focusable: useSignal<HTMLElement>(),
-        expanded: false,
         multiple,
-        navigables: [],
         readonly,
-        trigger: useSignal<HTMLElement>(),
+        value: multiple ? [] : undefined,
       },
       { deep: true }
     );
 
-    const { focus$ } = useComposite(store);
-    const { collapse$ } = useExpandable(store);
+    const context: SelectContext = {
+      Select: store,
+    };
 
-    useContextProvider(SelectContext, store);
+    useContextProvider(contextId, context);
 
     useOn(
       "keyup",
@@ -68,39 +170,31 @@ export const Select = component$<Props>(
 
         switch (event.code) {
           case "Escape": {
-            await collapse$();
-            await focus$(store.trigger);
+            if (context.SelectButton !== undefined) {
+              await collapseQrl(context);
+              await focusQrl(context, context.SelectButton.ref);
+            }
             break;
           }
         }
       })
     );
 
-    return (
-      <div {...(styles !== undefined ? { class: styles } : {})}>
-        <Slot />
+    useVisibleTask$(
+      async ({ track }) => {
+        store.stringified = track(() => JSON.stringify(store.value));
 
-        {name !== undefined
-          ? store.activated.map((option) =>
-              typeof option.value === "string" ? (
-                <input
-                  key={option.id}
-                  name={`${name}${multiple ? "[]" : ""}`}
-                  type="hidden"
-                  value={`${option.value}`}
-                />
-              ) : (
-                Object.entries(option.value).map((kv) => (
-                  <input
-                    key={option.id}
-                    name={`${name}${multiple ? "[]" : ""}[${kv[0]}]`}
-                    type="hidden"
-                    value={`${kv[1] as string}`}
-                  />
-                ))
-              )
-            )
-          : null}
+        if (onChange$ !== undefined) {
+          await onChange$(store.stringified);
+        }
+      },
+      { strategy: "document-ready" }
+    );
+
+    return (
+      <div class={styles} preventdefault:keydown preventdefault:keyup>
+        <Slot />
+        {name !== undefined ? <input name={name} required={required} type="hidden" value={store.stringified} /> : null}
       </div>
     );
   }

@@ -1,49 +1,92 @@
-import { $, component$, Slot, useContext, useOn, useSignal, useTask$, useVisibleTask$ } from "@builder.io/qwik";
+import {
+  $,
+  component$,
+  Slot,
+  useContext,
+  useOn,
+  useSignal,
+  useStore,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { SelectContext, type Value } from "~/components/select/Select";
-import { useComposite } from "~/hooks/useComposite";
-import { useToggle } from "~/hooks/useToggle";
+import { contextId, focusQrl, type SelectContext } from "~/components/Select/Select";
+import { useTab } from "~/hooks/useTab";
+import type { JSON, Reference } from "~/types";
 
-type Props = {
-  disabled?: boolean;
-  selected?: boolean;
-  styles?: string;
-  value?: Value;
+type SelectOptionProps = {
+  readonly disabled?: boolean;
+  readonly selected?: boolean;
+  readonly styles?: string;
+  readonly value?: JSON;
 };
 
-export const SelectOption = component$<Props>(({ disabled = false, selected = false, styles, value = "" }) => {
-  const id = nanoid();
-  const ref = useSignal<HTMLElement>();
+export type SelectOptionStore = Pick<Required<SelectOptionProps>, "disabled"> & {
+  readonly id: string;
+  readonly ref: Reference;
+  selected: boolean;
+  readonly value: JSON | undefined;
+};
 
-  const store = useContext(SelectContext);
+export const SelectOption = component$<SelectOptionProps>(({ disabled = false, selected = false, styles, value }) => {
+  const toggleQrl = $(async (context: SelectContext, store: SelectOptionStore, selected?: boolean) => {
+    if (!context.Select.multiple && context.SelectOption !== undefined && selected !== false) {
+      const optionStore = context.SelectOption.find((store: SelectOptionStore) => store.selected);
 
-  const { focus$ } = useComposite(store);
-  const { toggle$ } = useToggle();
-
-  const _disabled = store.disabled || disabled;
-
-  if (!_disabled && !store.readonly) {
-    const doToggle$ = $(async () => {
-      if (!store.multiple && store.activated.length === 1 && store.activated[0].ref !== ref) {
-        await toggle$(store.activated[0].ref, "selected");
-        store.activated.pop();
+      if (optionStore !== undefined && optionStore.ref !== store.ref) {
+        optionStore.selected = false;
       }
+    }
 
-      await toggle$(ref, "selected");
+    store.selected = selected ?? !store.selected;
 
-      if (ref.value?.ariaSelected === "true") {
-        store.activated.push({ id, ref, value });
+    if (context.SelectButton !== undefined) {
+      if (context.Select.multiple) {
+        if (store.value !== undefined) {
+          const _value = context.Select.value as JSON[];
+
+          if (store.selected) {
+            _value.push(store.value);
+          } else {
+            const index = _value.indexOf(store.value);
+
+            if (index > -1) {
+              _value.splice(index, 1);
+            }
+          }
+        }
       } else {
-        const index = store.activated.findIndex((option) => option.ref === ref);
-
-        if (index >= 0) {
-          store.activated.splice(index, 1);
+        if (context.SelectButton.ref.value !== undefined) {
+          if (store.selected && store.ref.value !== undefined) {
+            context.Select.value = store.value;
+            context.SelectButton.ref.value.innerHTML = store.ref.value.innerHTML;
+          } else if (selected !== false) {
+            context.Select.value = undefined;
+            context.SelectButton.ref.value.innerHTML = context.SelectButton.slot;
+          }
         }
       }
+    }
 
-      await focus$(ref);
-    });
+    await focusQrl(context, store.ref);
+  });
+
+  const context = useContext(contextId);
+
+  const store = useStore<SelectOptionStore>(
+    {
+      disabled: context.Select.disabled || disabled,
+      id: nanoid(),
+      ref: useSignal<HTMLElement>(),
+      selected,
+      value,
+    },
+    { deep: true }
+  );
+
+  if (!store.disabled && !context.Select.readonly) {
+    useTab(store.ref);
 
     useOn(
       "keyup",
@@ -52,7 +95,7 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
 
         switch (event.code) {
           case "Space": {
-            await doToggle$();
+            await toggleQrl(context, store);
             break;
           }
         }
@@ -64,29 +107,25 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
       $(async (e) => {
         const event = e as MouseEvent;
 
-        if (event.detail > 0) {
-          await doToggle$();
+        if (event.detail > 0 && event.button === 0) {
+          await toggleQrl(context, store);
         }
       })
     );
   }
 
   useTask$(() => {
-    if (!_disabled) {
-      store.navigables.push(ref);
+    if (context.SelectOption === undefined) {
+      context.SelectOption = [];
     }
+
+    context.SelectOption.push(store);
   });
 
   useVisibleTask$(
-    () => {
-      if (selected) {
-        const element = ref.value;
-
-        if (element !== undefined) {
-          element.ariaSelected = "true";
-        }
-
-        store.activated.push({ id, ref, value });
+    async () => {
+      if (store.selected) {
+        await toggleQrl(context, store, true);
       }
     },
     { strategy: "document-ready" }
@@ -94,11 +133,15 @@ export const SelectOption = component$<Props>(({ disabled = false, selected = fa
 
   return (
     <li
-      aria-disabled={_disabled}
-      ref={ref}
+      aria-disabled={store.disabled}
+      aria-selected={store.selected}
+      class={styles}
+      preventdefault:click
+      preventdefault:keydown
+      preventdefault:keyup
+      ref={store.ref}
       role="option"
-      tabIndex={store.focusable === ref ? 0 : -1}
-      {...(styles !== undefined ? { class: styles } : {})}
+      tabIndex={store.ref === context.Select.focusable ? 0 : -1}
     >
       <Slot />
     </li>

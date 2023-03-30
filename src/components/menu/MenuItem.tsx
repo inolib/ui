@@ -1,6 +1,6 @@
 import { component$, Slot, useContext, useSignal, useTask$ } from "@builder.io/qwik";
 
-import { MenuContext } from "~/components/menu/Menu";
+import { MenuContext } from "~/components/Menu/Menu";
 
 type Props = {
   styles?: string;
