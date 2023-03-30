@@ -1,7 +1,7 @@
 import { $, component$, Slot, useContext, useOn, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { MenuContext } from "~/components/menu/Menu";
+import { MenuContext } from "~/components/Menu/Menu";
 import { useComposite } from "~/hooks/useComposite";
 
 type Props = {
@@ -50,7 +50,7 @@ export const MenuItemList = component$<Props>(({ styles }) => {
   return (
     <>
       {store.expanded ? (
-        <ul id={id} class={styles}>
+        <ul class={styles} id={id}>
           <Slot />
         </ul>
       ) : null}

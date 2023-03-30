@@ -1,7 +1,9 @@
-import { $, type Signal } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
+
+import type { Reference } from "~/types";
 
 export const useToggle = () => {
-  const toggle$ = $((ref: Signal<HTMLElement | undefined>, state: string) => {
+  const toggle$ = $((ref: Reference, state: string) => {
     const element = ref.value;
 
     if (element !== undefined) {

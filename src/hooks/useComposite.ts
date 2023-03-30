@@ -1,14 +1,14 @@
-import { $, type Signal } from "@builder.io/qwik";
+import { $ } from "@builder.io/qwik";
+
+import type { Reference } from "~/types";
 
 export type Composite = {
-  focusable: Ref;
-  navigables: Array<Ref>;
+  focusable: Reference;
+  navigables: Reference[];
 };
 
-type Ref = Signal<HTMLElement | undefined>;
-
 export const useComposite = (store: Composite) => {
-  const focus$ = $((ref: Ref) => {
+  const focus$ = $((ref: Reference) => {
     store.focusable = ref;
     ref.value?.focus();
   });
@@ -18,7 +18,7 @@ export const useComposite = (store: Composite) => {
       switch (to) {
         case "first:checked":
         case "last:checked": {
-          return (ref: Ref) => {
+          return (ref: Reference) => {
             const element = ref.value as HTMLElement;
 
             if (element.tagName === "INPUT") {
@@ -35,12 +35,12 @@ export const useComposite = (store: Composite) => {
 
         case "first:pressed":
         case "last:pressed": {
-          return (ref: Ref) => ref.value?.ariaPressed === "true";
+          return (ref: Reference) => ref.value?.ariaPressed === "true";
         }
 
         case "first:selected":
         case "last:selected": {
-          return (ref: Ref) => ref.value?.ariaSelected === "true";
+          return (ref: Reference) => ref.value?.ariaSelected === "true";
         }
       }
 

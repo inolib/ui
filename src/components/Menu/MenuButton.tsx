@@ -1,6 +1,6 @@
 import { $, component$, Slot, useContext, useOn, useSignal, useTask$ } from "@builder.io/qwik";
 
-import { SelectContext } from "~/components/select/Select";
+import { MenuContext } from "~/components/Menu/Menu";
 import { useComposite } from "~/hooks/useComposite";
 import { useExpandable } from "~/hooks/useExpandable";
 
@@ -8,10 +8,10 @@ type Props = {
   styles?: string;
 };
 
-export const SelectButton = component$<Props>(({ styles }) => {
+export const MenuButton = component$<Props>(({ styles }) => {
   const ref = useSignal<HTMLElement>();
 
-  const store = useContext(SelectContext);
+  const store = useContext(MenuContext);
 
   const { focus$, moveFocus$ } = useComposite(store);
   const { collapse$, expand$ } = useExpandable(store);
@@ -22,12 +22,9 @@ export const SelectButton = component$<Props>(({ styles }) => {
       const event = e as KeyboardEvent;
 
       switch (event.code) {
-        case "ArrowDown":
-        case "ArrowUp":
-        case "Enter":
         case "Space": {
           await expand$();
-          await moveFocus$(event.code !== "ArrowUp" ? "first:selected" : "last:selected");
+          await moveFocus$("first:selected");
           break;
         }
       }
@@ -45,7 +42,7 @@ export const SelectButton = component$<Props>(({ styles }) => {
           await focus$(ref);
         } else {
           await expand$();
-          await moveFocus$("first:selected");
+          await moveFocus$("first");
         }
       }
     })
@@ -60,23 +57,13 @@ export const SelectButton = component$<Props>(({ styles }) => {
     <button
       aria-controls={store.controls}
       aria-expanded={store.expanded}
-      aria-haspopup="listbox"
-      disabled={store.disabled}
       ref={ref}
-      role="combobox"
+      role="menu"
       tabIndex={store.focusable === ref ? 0 : -1}
       type="button"
       {...(styles !== undefined ? { class: styles } : {})}
     >
-      {!store.multiple ? (
-        store.activated.length === 1 && store.activated[0].ref.value !== undefined ? (
-          store.activated[0].ref.value.innerHTML
-        ) : (
-          <Slot />
-        )
-      ) : (
-        <Slot />
-      )}
+      <Slot />
     </button>
   );
 });
