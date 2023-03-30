@@ -1,7 +1,7 @@
 import { $, component$, Slot, useOn, useSignal, useContext } from "@builder.io/qwik";
 import { useComposite } from "~/hooks/useComposite";
 import { useToggle } from "~/hooks/useToggle";
-import { TabsContext } from "./Tabs";
+import { TabsContext } from "~/components/tabs/Tabs";
 
 export const TabsItem = component$(() => {
   const ref = useSignal<HTMLElement>();

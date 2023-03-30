@@ -1,7 +1,7 @@
 import { component$, Slot, useContext, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { TabsContext } from "./Tabs";
+import { TabsContext } from "~/components/tabs/Tabs";
 
 type Props = {
   expanded?: boolean;
