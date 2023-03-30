@@ -1,66 +1,85 @@
-import {
-  $,
-  component$,
-  createContextId,
-  Slot,
-  useContextProvider,
-  useOn,
-  useSignal,
-  useStore,
-  type Signal,
-} from "@builder.io/qwik";
+// import {
+//   $,
+//   component$,
+//   createContextId,
+//   Slot,
+//   useContextProvider,
+//   useOn,
+//   useSignal,
+//   useStore,
+//   type Signal,
+// } from "@builder.io/qwik";
 
-import { useComposite, type Composite } from "~/hooks/useComposite";
-import { useExpandable, type Expandable } from "~/hooks/useExpandable";
-import { useToggle } from "~/hooks/useToggle";
+// import { type TabListStore } from "~/components/tabs/TabList";
+// import { type TabStore } from "~/components/tabs/Tab";
+// import { type TabPanelsStore } from "~/components/tabs/TabPanels";
+// import { type TabPanelStore } from "~/components/tabs/TabPanel";
 
-type Panel = {
-  id: string;
-  expanded: boolean;
-};
+// type Context = {
+//   Tabs: TabsStore;
+//   TabList?: TabListStore;
+//   Tab?: TabStore[];
+//   TabPanels?: TabPanelsStore;
+//   TabPanel?: TabPanelStore[];
+// };
 
-type Store = Composite & {
-  panels: { [id: string]: Panel };
-  trigger: Signal<HTMLElement | undefined>;
-};
+// type TabsStore = {};
 
-export const TabsContext = createContextId<Store>("inolib/ui/contexts/Tabs");
+// export const TabsContext = createContextId<TabsStore>("inolib/ui/contexts/Tabs");
 
-export const Tabs = component$(() => {
-  const ref = useSignal<HTMLElement>();
-  const store = useStore<Store>(
-    {
-      panels: [],
-      focusable: useSignal<HTMLElement>(),
-      navigables: [],
-      trigger: useSignal<HTMLElement>(),
-    },
-    { deep: true }
-  );
+// export const Tabs = component$(() => {
+//   const context = {
+//     Tabs: useStore<TabsStore>(
+//       {
+//         // TODO
+//       },
+//       { deep: true }
+//     ),
+//     TabList: useStore<TabListStore>({}),
+//     Tab: [],
+//     TabPanels: useStore<TabPanelsStore>({}),
+//     TabPanel: [],
+//   };
 
-  const { collapse$ } = useExpandable(store);
-  const { focus$ } = useComposite(store);
-  const { toggle$ } = useToggle();
+//   // const store = useStore<Store>(
+//   //   {
+//   //     panels: [],
+//   //     focusable: useSignal<HTMLElement>(),
+//   //     navigables: [],
+//   //     trigger: useSignal<HTMLElement>(),
+//   //   },
+//   //   { deep: true }
+//   // );
 
-  useContextProvider(TabsContext, store);
+//   // const { collapse$ } = useExpandable(store);
+//   // const { focus$ } = useComposite(store);
+//   // const { toggle$ } = useToggle();
 
-  return (
-    <div>
-      <Slot />
-    </div>
-  );
-});
+//   useContextProvider(TabsContext, context);
 
-<Tabs>
-  <TabsItemList>
-    <TabsItem></TabsItem>
-    <TabsItem></TabsItem>
-    <TabsItem></TabsItem>
-  </TabsItemList>
-  <TabsPanels>
-    <TabPanel expanded={true}></TabPanel>
-    <TabPanel></TabPanel>
-    <TabPanel></TabPanel>
-    <TabPanel></TabPanel>
-  </TabsPanels>
-</Tabs>;
+//   return (
+//     <div>
+//       <Slot />
+//     </div>
+//   );
+// });
+
+// {
+//   /* <Tabs>
+//   <TabList>
+//     <Tab controls="1" expanded={true}></Tab>
+//     <Tab controls="2"></Tab>
+//     <Tab controls="3"></Tab>
+//   </TabList>
+//   <TabPanels>
+//     <TabPanel id="1"></TabPanel>
+//     <TabPanel id="2"></TabPanel>
+//     <TabPanel id="3"></TabPanel>
+//   </TabPanels>
+// </Tabs>;
+
+// <Menu>
+//   <MenuButton aria-controls="item" aria-expanded={}></MenuButton>
+//   <MenuItem id="item" hidden={}></MenuItem>
+// </Menu>; */
+// }

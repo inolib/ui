@@ -1,15 +1,28 @@
-// import { $, component$, Slot, useOn, useSignal, useContext } from "@builder.io/qwik";
+// import { $, component$, Slot, useOn, useSignal, useContext, useTask$ } from "@builder.io/qwik";
 // import { useComposite } from "~/hooks/useComposite";
 // import { useToggle } from "~/hooks/useToggle";
-// import { TabsContext } from "./Tabs";
+// import { TabsContext } from "~/components/tabs/Tabs";
 
-// export const Tab = component$(() => {
-//   const ref = useSignal<HTMLElement>();
+// type TabProps = {
+//   readonly controls: string;
+//   readonly expanded?: boolean;
+// };
 
-//   const store = useContext(TabsContext);
+// export type TabStore = {
+//   controls: string;
+//   expanded: boolean;
+// };
 
-//   const { focus$ } = useComposite(store);
-//   const { toggle$ } = useToggle();
+// export const Tab = component$<TabProps>(({ controls, expanded = false }) => {
+//   const context = useContext(TabsContext);
+
+//   const store = useStore<TabStore>(
+//     {
+//       controls,
+//       expanded,
+//     },
+//     { deep: true }
+//   );
 
 //   const expand$ = $((panelId: string) => {
 //     // TODO
@@ -41,8 +54,12 @@
 //     })
 //   );
 
+//   useTask$(() => {
+//     context.Tab.push(store);
+//   });
+
 //   return (
-//     <li aria-controls={panelId} role="tab">
+//     <li aria-controls={store.controls} aria-expanded={store.expanded} role="tab">
 //       <Slot />
 //     </li>
 //   );
