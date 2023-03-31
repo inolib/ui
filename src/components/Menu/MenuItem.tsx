@@ -1,26 +1,32 @@
-import { component$, Slot, useContext, useSignal, useTask$ } from "@builder.io/qwik";
+import { component$, Slot, useContext, useSignal, useStore } from "@builder.io/qwik";
 
-import { MenuContext } from "~/components/Menu/Menu";
+import { contextId } from "~/components/Menu/Menu";
+import type { Reference } from "~/types";
 
-type Props = {
-  styles?: string;
-  type?: string;
+type MenuItemProps = {
+  readonly styles?: string;
+  readonly type?: string;
 };
 
-export const MenuItem = component$<Props>(({ styles }) => {
-  const ref = useSignal<HTMLElement>();
+export type MenuItemStore = {
+  readonly ref: Reference;
+};
 
-  const store = useContext(MenuContext);
+export const MenuItem = component$<MenuItemProps>(({ styles }) => {
+  const context = useContext(contextId);
 
-  useTask$(() => {
-    store.navigables.push(ref);
-  });
+  const store = useStore<MenuItemStore>(
+    {
+      ref: useSignal<HTMLElement>(),
+    },
+    { deep: true }
+  );
 
   return (
     <li
-      ref={ref}
+      ref={store.ref}
       role="item"
-      tabIndex={store.focusable === ref ? 0 : -1}
+      tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
       {...(styles !== undefined ? { class: styles } : {})}
     >
       <Slot />
