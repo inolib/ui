@@ -9,18 +9,15 @@ type MenuButtonProps = {
 export type MenuButtonStore = {
   expanded: boolean;
   readonly ref: Reference;
-  slot: string;
 };
 
 export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
   const context = useContext(contextId);
-  // const ref = useSignal<HTMLElement>();
 
   const store = useStore<MenuButtonStore>(
     {
       expanded: false,
       ref: useSignal<HTMLElement>(),
-      slot: "",
     },
     { deep: true }
   );
@@ -31,9 +28,12 @@ export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
       const event = e as KeyboardEvent;
 
       switch (event.code) {
+        case "ArrowDown":
+        case "ArrowUp":
+        case "Enter":
         case "Space": {
           await expandQrl(context);
-          await moveFocusQrl(context, "first:selected");
+          await moveFocusQrl(context, event.code !== "ArrowUp" ? "first" : "last");
           break;
         }
       }
@@ -67,10 +67,13 @@ export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
       aria-controls={context.MenuItemList?.id}
       aria-expanded={store.expanded}
       ref={store.ref}
-      role="menu"
+      aria-haspopup="menu"
       tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
       type="button"
-      {...(styles !== undefined ? { class: styles } : {})}
+      class={styles}
+      preventdefault:click
+      preventdefault:keydown
+      preventdefault:keyup
     >
       <Slot />
     </button>

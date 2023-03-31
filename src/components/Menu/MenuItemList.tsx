@@ -1,4 +1,4 @@
-import { $, component$, Slot, useContext, useOn, useStore, useTask$ } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useOn, useStore } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
 import { contextId, moveFocusQrl } from "~/components/Menu/Menu";
@@ -22,7 +22,7 @@ export const MenuItemList = component$<MenuItemListProps>(({ styles }) => {
   );
 
   useOn(
-    "keyup",
+    "keydown",
     $(async (e) => {
       const event = e as KeyboardEvent;
 
@@ -36,7 +36,16 @@ export const MenuItemList = component$<MenuItemListProps>(({ styles }) => {
           await moveFocusQrl(context, "previous");
           break;
         }
+      }
+    })
+  );
 
+  useOn(
+    "keyup",
+    $(async (e) => {
+      const event = e as KeyboardEvent;
+
+      switch (event.code) {
         case "End": {
           await moveFocusQrl(context, "last");
           break;
@@ -50,14 +59,10 @@ export const MenuItemList = component$<MenuItemListProps>(({ styles }) => {
     })
   );
 
-  useTask$(() => {
-    context.MenuItemList = store;
-  });
-
   return (
     <>
       {context.MenuButton?.expanded ? (
-        <ul class={styles} id={store.id}>
+        <ul class={styles} id={store.id} role="menu" preventdefault:keydown preventdefault:keyup>
           <Slot />
         </ul>
       ) : null}

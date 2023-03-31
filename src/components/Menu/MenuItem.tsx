@@ -1,11 +1,10 @@
-import { component$, Slot, useContext, useSignal, useStore } from "@builder.io/qwik";
+import { component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
 
 import { contextId } from "~/components/Menu/Menu";
 import type { Reference } from "~/types";
 
 type MenuItemProps = {
-  readonly styles?: string;
-  readonly type?: string;
+  styles?: string;
 };
 
 export type MenuItemStore = {
@@ -22,13 +21,16 @@ export const MenuItem = component$<MenuItemProps>(({ styles }) => {
     { deep: true }
   );
 
+  useTask$(() => {
+    if (context.MenuItem === undefined) {
+      context.MenuItem = [];
+    }
+
+    context.MenuItem.push(store);
+  });
+
   return (
-    <li
-      ref={store.ref}
-      role="item"
-      tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
-      {...(styles !== undefined ? { class: styles } : {})}
-    >
+    <li ref={store.ref} role="menuitem" tabIndex={store.ref === context.Menu.focusable ? 0 : -1} class={styles}>
       <Slot />
     </li>
   );
