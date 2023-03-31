@@ -7,36 +7,14 @@ import {
   useOn,
   useSignal,
   useStore,
-  type Signal,
   type QRL,
 } from "@builder.io/qwik";
 
 import { type MenuButtonStore } from "~/components/Menu/MenuButton";
 import { type MenuItemStore } from "~/components/Menu/MenuItem";
 import { type MenuItemListStore } from "~/components/Menu/MenuItemList";
+import { useTab } from "~/hooks/useTab";
 import { Reference } from "~/types";
-
-export type MenuContext = {
-  Menu: MenuStore;
-  MenuButton?: MenuButtonStore;
-  MenuItemList?: MenuItemListStore;
-  MenuItem?: MenuItemStore[];
-};
-
-type MenuProps = {
-  readonly styles?: string;
-  readonly value?: Value;
-  readonly onChange$?: QRL<(value: string | undefined) => void>;
-};
-
-type Ref = Signal<HTMLElement | undefined>;
-
-type MenuStore = {
-  activated: Array<{ id: string; ref: Ref; value: Value }>;
-  controls: string;
-  trigger: Ref;
-  focusable: Reference;
-};
 
 export const collapseQrl = $((context: MenuContext) => {
   if (context.MenuButton !== undefined) {
@@ -140,17 +118,27 @@ export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
   }
 });
 
-export type Value = string | Record<string, boolean | number | string>;
+export type MenuContext = {
+  Menu: MenuStore;
+  MenuButton?: MenuButtonStore;
+  MenuItemList?: MenuItemListStore;
+  MenuItem?: MenuItemStore[];
+};
+
+type MenuProps = {
+  readonly styles?: string;
+};
+
+type MenuStore = {
+  focusable: Reference;
+};
 
 export const contextId = createContextId<MenuContext>("inolib/ui/contexts/Menu");
 
 export const Menu = component$<MenuProps>(({ styles }) => {
   const store = useStore<MenuStore>(
     {
-      activated: [],
-      controls: "",
       focusable: useSignal<HTMLElement>(),
-      trigger: useSignal<HTMLElement>(),
     },
     { deep: true }
   );
@@ -161,6 +149,8 @@ export const Menu = component$<MenuProps>(({ styles }) => {
 
   useContextProvider(contextId, context);
 
+  useTab(store.focusable);
+
   useOn(
     "keyup",
     $(async (e) => {
@@ -168,8 +158,10 @@ export const Menu = component$<MenuProps>(({ styles }) => {
 
       switch (event.code) {
         case "Escape": {
-          await collapseQrl(context);
-          await focusQrl(context, store.trigger);
+          if (context.MenuButton !== undefined) {
+            await collapseQrl(context);
+            await focusQrl(context, context.MenuButton.ref);
+          }
           break;
         }
       }
@@ -177,7 +169,7 @@ export const Menu = component$<MenuProps>(({ styles }) => {
   );
 
   return (
-    <div class={styles}>
+    <div class={styles} preventdefault:click preventdefault:keydown>
       <Slot />
     </div>
   );
