@@ -1,1 +1,1 @@
-{"version":3,"file":"TabsItem.d.ts","sourceRoot":"","sources":["../../../../src/components/tabs/TabsItem.tsx"],"names":[],"mappings":""}
+{"version":3,"file":"TabsItem.d.ts","sourceRoot":"","sources":["../../../../src/components/tabs/TabsItem.tsx"],"names":[],"mappings":"AAOA,KAAK,aAAa,GAAG;IACnB,OAAO,EAAE,MAAM,CAAC;IAChB,QAAQ,CAAC,EAAE,OAAO,CAAC;CACpB,CAAC;AAEF,eAAO,MAAM,QAAQ,qDAiCnB,CAAC"}

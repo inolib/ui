@@ -6,8 +6,6 @@ export const TestContext = createContextId<Contexts>("inolib/ui/contexts/Test");
 
 type Contexts = {
   TestMenu: TestStore;
-  TestMenuButton?: TestMenuButtonStore;
-  TestMenuItem?: TestMenuItemStore;
 };
 
 type TestStore = {

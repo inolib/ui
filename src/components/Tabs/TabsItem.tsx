@@ -1,49 +1,46 @@
-// import { $, component$, Slot, useOn, useSignal, useContext } from "@builder.io/qwik";
-// import { useComposite } from "~/hooks/useComposite";
-// import { useToggle } from "~/hooks/useToggle";
-// import { TabsContext } from "./Tabs";
+import { $, component$, Slot, useOn, useContext, useStore, useTask$ } from "@builder.io/qwik";
+import { nanoid } from "nanoid";
 
-// export const Tab = component$(() => {
-//   const ref = useSignal<HTMLElement>();
+import { TabsContext } from "./Tabs";
 
-//   const store = useContext(TabsContext);
+type ToggleFunction = (selectedIndex: number) => void;
 
-//   const { focus$ } = useComposite(store);
-//   const { toggle$ } = useToggle();
+type TabsItemProps = {
+  panelId: number;
+  selected?: boolean;
+};
 
-//   const expand$ = $((panelId: string) => {
-//     // TODO
-//   });
+export const TabsItem = component$<TabsItemProps>(({ panelId, selected = false }) => {
+  const id = nanoid();
 
-//   useOn(
-//     "click",
-//     $(async (e) => {
-//       const event = e as MouseEvent;
+  const context = useContext(TabsContext);
 
-//       if (event.detail > 0 && event.button === 0) {
-//         await toggle$(ref, "pressed");
-//       }
-//     })
-//   );
+  const toggle$ = $<ToggleFunction>((selectedIndex) => {
+    context.Tabs.tabs.attributes.forEach((tab: any, index: any) => {
+      tab.hidden = index === selectedIndex ? false : true;
+      tab["aria-expanded"] = index === selectedIndex ? true : false;
+    });
+  });
 
-//   useOn(
-//     "keyup",
-//     $(async (e) => {
-//       const event = e as KeyboardEvent;
+  useTask$(() => {
+    context.Tabs.tabs.attributes.push({
+      id: id,
+      panelId: panelId,
+      hidden: !selected,
+      "aria-expanded": selected,
+    });
+  });
 
-//       switch (event.code) {
-//         case "Enter":
-//         case "Space": {
-//           await expand$(/* panelId */);
-//           break;
-//         }
-//       }
-//     })
-//   );
-
-//   return (
-//     <li aria-controls={panelId} role="tab">
-//       <Slot />
-//     </li>
-//   );
-// });
+  return (
+    <li>
+      <button
+        onClick$={async () => {
+          const index = context.Tabs.tabs.attributes.findIndex((element) => element.id === id);
+          await toggle$(index);
+        }}
+      >
+        <Slot />
+      </button>
+    </li>
+  );
+});
