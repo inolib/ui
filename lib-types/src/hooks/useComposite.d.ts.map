@@ -1,1 +1,0 @@
-{"version":3,"file":"useComposite.d.ts","sourceRoot":"","sources":["../../../src/hooks/useComposite.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,SAAS,CAAC;AAEzC,MAAM,MAAM,SAAS,GAAG;IACtB,SAAS,EAAE,SAAS,CAAC;IACrB,UAAU,EAAE,SAAS,EAAE,CAAC;CACzB,CAAC;AAEF,eAAO,MAAM,YAAY,UAAW,SAAS;iDACpB,SAAS;oDAKA,MAAM;CAkFvC,CAAC"}
