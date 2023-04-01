@@ -30,7 +30,7 @@ export const MenuItem = component$<MenuItemProps>(({ styles }) => {
   });
 
   return (
-    <li ref={store.ref} role="menuitem" tabIndex={store.ref === context.Menu.focusable ? 0 : -1} class={styles}>
+    <li class={styles} ref={store.ref} role="menuitem" tabIndex={store.ref === context.Menu.focusable ? 0 : -1}>
       <Slot />
     </li>
   );

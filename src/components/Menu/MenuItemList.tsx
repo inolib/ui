@@ -62,7 +62,7 @@ export const MenuItemList = component$<MenuItemListProps>(({ styles }) => {
   return (
     <>
       {context.MenuButton?.expanded ? (
-        <ul class={styles} id={store.id} role="menu" preventdefault:keydown preventdefault:keyup>
+        <ul class={styles} id={store.id} preventdefault:keydown preventdefault:keyup role="menu">
           <Slot />
         </ul>
       ) : null}

@@ -1,18 +1,9 @@
-import {
-  $,
-  component$,
-  createContextId,
-  Slot,
-  useContextProvider,
-  useOn,
-  useSignal,
-  useStore,
-  type QRL,
-} from "@builder.io/qwik";
+import { $, component$, createContextId, Slot, useContextProvider, useOn, useStore } from "@builder.io/qwik";
 
 import { type MenuButtonStore } from "~/components/Menu/MenuButton";
 import { type MenuItemStore } from "~/components/Menu/MenuItem";
 import { type MenuItemListStore } from "~/components/Menu/MenuItemList";
+import { useFocus } from "~/hooks/useFocus";
 import { useTab } from "~/hooks/useTab";
 import { Reference } from "~/types";
 
@@ -29,12 +20,8 @@ export const expandQrl = $((context: MenuContext) => {
 });
 
 export const focusQrl = $((context: MenuContext, ref: Reference) => {
-  const element = ref.value;
-
-  if (element !== undefined) {
-    context.Menu.focusable = ref;
-    element.focus();
-  }
+  context.Menu.focusable = ref;
+  context.Menu.focused = ref;
 });
 
 export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
@@ -130,18 +117,14 @@ type MenuProps = {
 };
 
 type MenuStore = {
-  focusable: Reference;
+  focusable?: Reference;
+  focused?: Reference;
 };
 
 export const contextId = createContextId<MenuContext>("inolib/ui/contexts/Menu");
 
 export const Menu = component$<MenuProps>(({ styles }) => {
-  const store = useStore<MenuStore>(
-    {
-      focusable: useSignal<HTMLElement>(),
-    },
-    { deep: true }
-  );
+  const store = useStore<MenuStore>({}, { deep: true });
 
   const context: MenuContext = {
     Menu: store,
@@ -149,7 +132,8 @@ export const Menu = component$<MenuProps>(({ styles }) => {
 
   useContextProvider(contextId, context);
 
-  useTab(store.focusable);
+  useFocus(store);
+  useTab();
 
   useOn(
     "keyup",

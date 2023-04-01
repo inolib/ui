@@ -1,6 +1,7 @@
 import { $, component$, Slot, useContext, useOn, useSignal, useStore, useTask$ } from "@builder.io/qwik";
-import type { Reference } from "~/types";
+
 import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "~/components/Menu/Menu";
+import type { Reference } from "~/types";
 
 type MenuButtonProps = {
   readonly styles?: string;
@@ -66,14 +67,14 @@ export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
     <button
       aria-controls={context.MenuItemList?.id}
       aria-expanded={store.expanded}
-      ref={store.ref}
       aria-haspopup="menu"
-      tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
-      type="button"
       class={styles}
       preventdefault:click
       preventdefault:keydown
       preventdefault:keyup
+      ref={store.ref}
+      tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
+      type="button"
     >
       <Slot />
     </button>
