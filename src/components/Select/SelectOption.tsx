@@ -12,7 +12,6 @@ import {
 import { nanoid } from "nanoid";
 
 import { contextId, focusQrl, type SelectContext } from "~/components/Select/Select";
-import { useTab } from "~/hooks/useTab";
 import type { JSON, Reference } from "~/types";
 
 type SelectOptionProps = {
@@ -31,7 +30,7 @@ export type SelectOptionStore = Pick<Required<SelectOptionProps>, "disabled"> & 
 
 export const SelectOption = component$<SelectOptionProps>(({ disabled = false, selected = false, styles, value }) => {
   const toggleQrl = $(async (context: SelectContext, store: SelectOptionStore, selected?: boolean) => {
-    if (!context.Select.multiple && context.SelectOption !== undefined && selected !== false) {
+    if (!context.Select.multiple && selected !== false && context.SelectOption !== undefined) {
       const optionStore = context.SelectOption.find((store: SelectOptionStore) => store.selected);
 
       if (optionStore !== undefined && optionStore.ref !== store.ref) {
@@ -44,7 +43,7 @@ export const SelectOption = component$<SelectOptionProps>(({ disabled = false, s
     if (context.SelectButton !== undefined) {
       if (context.Select.multiple) {
         if (store.value !== undefined) {
-          const _value = context.Select.value as JSON[];
+          const _value = context.Select.value.raw as JSON[];
 
           if (store.selected) {
             _value.push(store.value);
@@ -59,10 +58,10 @@ export const SelectOption = component$<SelectOptionProps>(({ disabled = false, s
       } else {
         if (context.SelectButton.ref.value !== undefined) {
           if (store.selected && store.ref.value !== undefined) {
-            context.Select.value = store.value;
+            context.Select.value.raw = store.value;
             context.SelectButton.ref.value.innerHTML = store.ref.value.innerHTML;
-          } else if (selected !== false) {
-            context.Select.value = undefined;
+          } else if (selected !== false && context.SelectButton.slot !== undefined) {
+            context.Select.value.raw = undefined;
             context.SelectButton.ref.value.innerHTML = context.SelectButton.slot;
           }
         }
@@ -86,8 +85,6 @@ export const SelectOption = component$<SelectOptionProps>(({ disabled = false, s
   );
 
   if (!store.disabled && !context.Select.readonly) {
-    useTab(store.ref);
-
     useOn(
       "keyup",
       $(async (e) => {

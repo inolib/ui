@@ -5,39 +5,18 @@ import {
   Slot,
   useContextProvider,
   useOn,
-  useSignal,
   useStore,
   useVisibleTask$,
   type QRL,
 } from "@builder.io/qwik";
 
 import { type SelectButtonStore } from "~/components/Select/SelectButton";
+import { type SelectLabelStore } from "~/components/Select/SelectLabel";
 import { type SelectOptionStore } from "~/components/Select/SelectOption";
 import { type SelectOptionListStore } from "~/components/Select/SelectOptionList";
+import { useFocus } from "~/hooks/useFocus";
+import { useTab } from "~/hooks/useTab";
 import type { JSON, Reference } from "~/types";
-
-export type SelectContext = {
-  Select: SelectStore;
-  SelectButton?: SelectButtonStore;
-  SelectOptionList?: SelectOptionListStore;
-  SelectOption?: SelectOptionStore[];
-};
-
-type SelectProps = {
-  readonly disabled?: boolean;
-  readonly multiple?: boolean;
-  readonly name?: string;
-  readonly onChange$?: QRL<(value: string | undefined) => void>;
-  readonly readonly?: boolean;
-  readonly required?: boolean;
-  readonly styles?: string;
-};
-
-type SelectStore = Pick<Required<SelectProps>, "disabled" | "multiple" | "readonly"> & {
-  focusable: Reference;
-  stringified?: string | undefined;
-  value: JSON | undefined;
-};
 
 export const collapseQrl = $((context: SelectContext) => {
   if (context.SelectButton !== undefined) {
@@ -52,12 +31,8 @@ export const expandQrl = $((context: SelectContext) => {
 });
 
 export const focusQrl = $((context: SelectContext, ref: Reference) => {
-  const element = ref.value;
-
-  if (element !== undefined) {
-    context.Select.focusable = ref;
-    element.focus();
-  }
+  context.Select.focusable = ref;
+  context.Select.focused = ref;
 });
 
 export const moveFocusQrl = $(async (context: SelectContext, to: string) => {
@@ -142,6 +117,33 @@ export const moveFocusQrl = $(async (context: SelectContext, to: string) => {
   }
 });
 
+export type SelectContext = {
+  Select: SelectStore;
+  SelectButton?: SelectButtonStore;
+  SelectLabel?: SelectLabelStore;
+  SelectOption?: SelectOptionStore[];
+  SelectOptionList?: SelectOptionListStore;
+};
+
+type SelectProps = {
+  readonly disabled?: boolean;
+  readonly multiple?: boolean;
+  readonly name?: string;
+  readonly onChange$?: QRL<(value: string | undefined) => void>;
+  readonly readonly?: boolean;
+  readonly required?: boolean;
+  readonly styles?: string;
+};
+
+type SelectStore = Pick<Required<SelectProps>, "disabled" | "multiple" | "readonly"> & {
+  focusable?: Reference;
+  focused?: Reference;
+  value: {
+    raw: JSON | undefined;
+    stringified?: string | undefined;
+  };
+};
+
 export const contextId = createContextId<SelectContext>("inolib/ui/contexts/Select");
 
 export const Select = component$<SelectProps>(
@@ -149,10 +151,11 @@ export const Select = component$<SelectProps>(
     const store = useStore<SelectStore>(
       {
         disabled,
-        focusable: useSignal<HTMLElement>(),
         multiple,
         readonly,
-        value: multiple ? [] : undefined,
+        value: {
+          raw: multiple ? [] : undefined,
+        },
       },
       { deep: true }
     );
@@ -162,6 +165,9 @@ export const Select = component$<SelectProps>(
     };
 
     useContextProvider(contextId, context);
+
+    useFocus(store);
+    useTab();
 
     useOn(
       "keyup",
@@ -182,10 +188,10 @@ export const Select = component$<SelectProps>(
 
     useVisibleTask$(
       async ({ track }) => {
-        store.stringified = track(() => JSON.stringify(store.value));
+        store.value.stringified = track(() => JSON.stringify(store.value.raw));
 
         if (onChange$ !== undefined) {
-          await onChange$(store.stringified);
+          await onChange$(store.value.stringified);
         }
       },
       { strategy: "document-ready" }
@@ -194,7 +200,9 @@ export const Select = component$<SelectProps>(
     return (
       <div class={styles} preventdefault:keydown preventdefault:keyup>
         <Slot />
-        {name !== undefined ? <input name={name} required={required} type="hidden" value={store.stringified} /> : null}
+        {name !== undefined ? (
+          <input name={name} required={required} type="hidden" value={store.value.stringified} />
+        ) : null}
       </div>
     );
   }
