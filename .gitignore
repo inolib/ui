@@ -1,5 +1,5 @@
 .cache/
 coverage/
-node_modules/
 lib/
 lib-types/
+node_modules/
