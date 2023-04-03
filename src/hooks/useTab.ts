@@ -31,7 +31,7 @@ export const tabQrl = $((to: string) => {
       }
     }
 
-    const focusable = (element as HTMLElement).tabIndex !== -1;
+    const focusable = (element as HTMLElement).tabIndex > -1;
     const visible = element.getClientRects().length > 0;
 
     return !disabled && focusable && visible;
