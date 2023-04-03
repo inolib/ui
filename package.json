@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@builder.io/qwik": "^0.100.0",
+    "@builder.io/qwik-city": "^0.100.0",
     "@ianvs/prettier-plugin-sort-imports": "^3.7.2",
     "@testing-library/dom": "^9.2.0",
     "@testing-library/user-event": "^14.4.3",
