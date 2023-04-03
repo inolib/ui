@@ -1,11 +1,11 @@
 import { $, component$, createContextId, Slot, useContextProvider, useOn, useStore } from "@builder.io/qwik";
 
 import { type MenuButtonStore } from "~/components/Menu/MenuButton";
-import { type MenuItemStore } from "~/components/Menu/MenuItem";
-import { type MenuItemListStore } from "~/components/Menu/MenuItemList";
+import { type MenuItemLinkStore } from "~/components/Menu/MenuItemLink";
+import { type MenuItemsStore } from "~/components/Menu/MenuItems";
 import { useFocus } from "~/hooks/useFocus";
 import { useTab } from "~/hooks/useTab";
-import { Reference } from "~/types";
+import type { Reference } from "~/types";
 
 export const collapseQrl = $((context: MenuContext) => {
   if (context.MenuButton !== undefined) {
@@ -29,13 +29,12 @@ export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
     switch (to) {
       case "first:selected":
       case "last:selected": {
-        //return (item: MenuItemStore) => item.selected;
-        return (item: MenuItemStore) => false;
+        return (item: MenuItemLinkStore) => item.selected;
       }
 
       case "next":
       case "previous": {
-        return (item: MenuItemStore) => item.ref === context.Menu.focusable;
+        return (item: MenuItemLinkStore) => item.ref === context.Menu.focusable;
       }
     }
 
@@ -108,8 +107,8 @@ export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
 export type MenuContext = {
   Menu: MenuStore;
   MenuButton?: MenuButtonStore;
-  MenuItemList?: MenuItemListStore;
-  MenuItem?: MenuItemStore[];
+  MenuItem?: MenuItemLinkStore[];
+  MenuItems?: MenuItemsStore;
 };
 
 type MenuProps = {
@@ -153,7 +152,7 @@ export const Menu = component$<MenuProps>(({ styles }) => {
   );
 
   return (
-    <div class={styles} preventdefault:click preventdefault:keydown>
+    <div class={styles} preventdefault:keydown preventdefault:keyup>
       <Slot />
     </div>
   );

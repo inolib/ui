@@ -1,20 +1,20 @@
-import { $, component$, Slot, useContext, useOn, useStore } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useOn, useStore, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
 import { contextId, moveFocusQrl } from "~/components/Menu/Menu";
 
-type MenuItemListProps = {
+type MenuItemsProps = {
   readonly styles?: string;
 };
 
-export type MenuItemListStore = {
+export type MenuItemsStore = {
   readonly id: string;
 };
 
-export const MenuItemList = component$<MenuItemListProps>(({ styles }) => {
+export const MenuItems = component$<MenuItemsProps>(({ styles }) => {
   const context = useContext(contextId);
 
-  const store = useStore<MenuItemListStore>(
+  const store = useStore<MenuItemsStore>(
     {
       id: nanoid(),
     },
@@ -58,6 +58,10 @@ export const MenuItemList = component$<MenuItemListProps>(({ styles }) => {
       }
     })
   );
+
+  useTask$(() => {
+    context.MenuItems = store;
+  });
 
   return (
     <>

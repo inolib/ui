@@ -1,4 +1,14 @@
-import { $, component$, Slot, useContext, useOn, useSignal, useStore, useTask$ } from "@builder.io/qwik";
+import {
+  $,
+  component$,
+  Slot,
+  useContext,
+  useOn,
+  useSignal,
+  useStore,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 
 import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "~/components/Menu/Menu";
 import type { Reference } from "~/types";
@@ -8,6 +18,7 @@ type MenuButtonProps = {
 };
 
 export type MenuButtonStore = {
+  controls?: string | undefined;
   expanded: boolean;
   readonly ref: Reference;
 };
@@ -34,7 +45,7 @@ export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
         case "Enter":
         case "Space": {
           await expandQrl(context);
-          await moveFocusQrl(context, event.code !== "ArrowUp" ? "first" : "last");
+          await moveFocusQrl(context, event.code !== "ArrowUp" ? "first:selected" : "last:selected");
           break;
         }
       }
@@ -52,7 +63,7 @@ export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
           await focusQrl(context, store.ref);
         } else {
           await expandQrl(context);
-          await moveFocusQrl(context, "first");
+          await moveFocusQrl(context, "first:selected");
         }
       }
     })
@@ -63,9 +74,18 @@ export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
     context.Menu.focusable = store.ref;
   });
 
+  useVisibleTask$(
+    () => {
+      if (context.MenuItems !== undefined) {
+        store.controls = context.MenuItems.id;
+      }
+    },
+    { strategy: "document-ready" }
+  );
+
   return (
     <button
-      aria-controls={context.MenuItemList?.id}
+      aria-controls={store.controls}
       aria-expanded={store.expanded}
       aria-haspopup="menu"
       class={styles}
