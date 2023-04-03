@@ -41,17 +41,17 @@ export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
     return () => false;
   };
 
-  if (context.MenuItem !== undefined) {
+  if (context.MenuItemLink !== undefined) {
     switch (to) {
       case "first": {
-        if (context.MenuItem.length > 0) {
-          await focusQrl(context, context.MenuItem[0].ref);
+        if (context.MenuItemLink.length > 0) {
+          await focusQrl(context, context.MenuItemLink[0].ref);
         }
         break;
       }
 
       case "first:selected": {
-        const item = context.MenuItem.find(predicate(to));
+        const item = context.MenuItemLink.find(predicate(to));
 
         if (item !== undefined) {
           await focusQrl(context, item.ref);
@@ -63,14 +63,14 @@ export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
       }
 
       case "last": {
-        if (context.MenuItem.length > 0) {
-          await focusQrl(context, context.MenuItem[context.MenuItem.length - 1].ref);
+        if (context.MenuItemLink.length > 0) {
+          await focusQrl(context, context.MenuItemLink[context.MenuItemLink.length - 1].ref);
         }
         break;
       }
 
       case "last:selected": {
-        const item = context.MenuItem.findLast(predicate(to));
+        const item = context.MenuItemLink.findLast(predicate(to));
 
         if (item !== undefined) {
           await focusQrl(context, item.ref);
@@ -82,20 +82,20 @@ export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
       }
 
       case "next": {
-        const index = context.MenuItem.findIndex(predicate(to));
+        const index = context.MenuItemLink.findIndex(predicate(to));
 
-        if (index > -1 && index < context.MenuItem.length - 1) {
-          await focusQrl(context, context.MenuItem[index + 1].ref);
+        if (index > -1 && index < context.MenuItemLink.length - 1) {
+          await focusQrl(context, context.MenuItemLink[index + 1].ref);
         }
 
         break;
       }
 
       case "previous": {
-        const index = context.MenuItem.findLastIndex(predicate(to));
+        const index = context.MenuItemLink.findLastIndex(predicate(to));
 
         if (index > 0) {
-          await focusQrl(context, context.MenuItem[index - 1].ref);
+          await focusQrl(context, context.MenuItemLink[index - 1].ref);
         }
 
         break;
@@ -107,7 +107,7 @@ export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
 export type MenuContext = {
   Menu: MenuStore;
   MenuButton?: MenuButtonStore;
-  MenuItem?: MenuItemLinkStore[];
+  MenuItemLink?: MenuItemLinkStore[];
   MenuItems?: MenuItemsStore;
 };
 

@@ -26,11 +26,11 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
   );
 
   useTask$(() => {
-    if (context.MenuItem === undefined) {
-      context.MenuItem = [];
+    if (context.MenuItemLink === undefined) {
+      context.MenuItemLink = [];
     }
 
-    context.MenuItem.push(store);
+    context.MenuItemLink.push(store);
   });
 
   return (
