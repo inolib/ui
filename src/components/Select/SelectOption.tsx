@@ -9,7 +9,6 @@ import {
   useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
-import { nanoid } from "nanoid";
 
 import { contextId, focusQrl, type SelectContext } from "~/components/Select/Select";
 import type { JSON, Reference } from "~/types";
@@ -22,7 +21,6 @@ type SelectOptionProps = {
 };
 
 export type SelectOptionStore = Pick<Required<SelectOptionProps>, "disabled"> & {
-  readonly id: string;
   readonly ref: Reference;
   selected: boolean;
   readonly value: JSON | undefined;
@@ -76,7 +74,6 @@ export const SelectOption = component$<SelectOptionProps>(({ disabled = false, s
   const store = useStore<SelectOptionStore>(
     {
       disabled: context.Select.disabled || disabled,
-      id: nanoid(),
       ref: useSignal<HTMLElement>(),
       selected,
       value,
