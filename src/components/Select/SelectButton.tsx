@@ -84,8 +84,8 @@ export const SelectButton = component$<SelectButtonProps>(({ styles }) => {
         store.slot = store.ref.value.innerHTML;
       }
 
-      if (context.SelectOptionList !== undefined) {
-        store.controls = context.SelectOptionList.id;
+      if (context.SelectOptions !== undefined) {
+        store.controls = context.SelectOptions.id;
       }
     },
     { strategy: "document-ready" }
