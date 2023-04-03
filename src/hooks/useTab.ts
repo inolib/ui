@@ -4,7 +4,7 @@ const selectors =
   "a[href], area[href], audio[controls], button, form, iframe, input:not([type='hidden']), object, select, summary, textarea, video[controls], [contenteditable], [tabindex]";
 
 export const tabQrl = $((to: string) => {
-  const focused = document.querySelector(":focus");
+  const focused = document.activeElement;
 
   const tabbables = Array.from(document.querySelectorAll(selectors)).filter((element) => {
     let disabled = false;
