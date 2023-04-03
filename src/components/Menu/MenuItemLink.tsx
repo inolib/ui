@@ -34,10 +34,9 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
   });
 
   return (
-    <li role="presentation">
+    <li role="presentation" class={styles}>
       <a
         aria-current={store.selected ? "page" : undefined}
-        class={styles}
         href={href}
         ref={store.ref}
         role="menuitem"
