@@ -1,26 +1,42 @@
-import { component$, Slot, useContext, useTask$ } from "@builder.io/qwik";
-import { nanoid } from "nanoid";
+import { component$, Slot, useContext, useStore, useTask$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { TabsContext, type TabAttributes } from "~/components/tabs/Tabs";
+import type { Reference } from "~/types";
 
-import { TabsContext } from "~/components/tabs/Tabs";
-
-type Props = {
-  expanded?: boolean;
+type TabsPanelProps = {
+  id: string;
 };
 
-export const TabsPanel = component$<Props>(({ expanded = false }) => {
-  const id = nanoid();
+export type TabsPanelStore = {
+  readonly ref: Reference;
+  tab?: TabAttributes | undefined;
+};
 
-  const store = useContext(TabsContext);
+export const TabsPanel = component$<TabsPanelProps>(({ id }) => {
+  const context = useContext(TabsContext);
+
+  const store = useStore<TabsPanelStore>(
+    {
+      ref: useSignal<HTMLElement>(),
+    },
+    { deep: true }
+  );
 
   useTask$(() => {
-    store.panels[id] = {
-      id,
-      expanded,
-    };
+    if (context.TabsPanel === undefined) {
+      context.TabsPanel = [];
+    }
+    context.TabsPanel.push(store);
   });
 
+  useVisibleTask$(
+    () => {
+      store.tab = context.Tabs.tabs.attributes.find((tab) => tab.panelId === id);
+    },
+    { strategy: "document-ready" }
+  );
+
   return (
-    <div id={id} hidden={!store.panels[id].expanded}>
+    <div ref={store.ref} hidden={store.tab !== undefined ? store.tab.hidden : undefined} role="tabpanel">
       <Slot />
     </div>
   );
