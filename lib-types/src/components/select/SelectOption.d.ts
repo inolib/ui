@@ -6,7 +6,6 @@ type SelectOptionProps = {
     readonly value?: JSON;
 };
 export type SelectOptionStore = Pick<Required<SelectOptionProps>, "disabled"> & {
-    readonly id: string;
     readonly ref: Reference;
     selected: boolean;
     readonly value: JSON | undefined;

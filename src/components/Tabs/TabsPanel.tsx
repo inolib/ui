@@ -1,19 +1,42 @@
-import { component$, Slot, useContext, useStore } from "@builder.io/qwik";
-import { TabsContext } from "./Tabs";
+import { component$, Slot, useContext, useStore, useTask$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { TabsContext, type TabAttributes } from "~/components/tabs/Tabs";
+import type { Reference } from "~/types";
 
 type TabsPanelProps = {
-  id: number;
+  id: string;
+};
+
+export type TabsPanelStore = {
+  readonly ref: Reference;
+  tab?: TabAttributes | undefined;
 };
 
 export const TabsPanel = component$<TabsPanelProps>(({ id }) => {
   const context = useContext(TabsContext);
-  const index = context.Tabs.tabs.attributes.findIndex((element) => element.panelId === id);
+
+  const store = useStore<TabsPanelStore>(
+    {
+      ref: useSignal<HTMLElement>(),
+    },
+    { deep: true }
+  );
+
+  useTask$(() => {
+    if (context.TabsPanel === undefined) {
+      context.TabsPanel = [];
+    }
+    context.TabsPanel.push(store);
+  });
+
+  useVisibleTask$(
+    () => {
+      store.tab = context.Tabs.tabs.attributes.find((tab) => tab.panelId === id);
+    },
+    { strategy: "document-ready" }
+  );
 
   return (
-    <div
-      hidden={context.Tabs.tabs.attributes[index].hidden}
-      aria-expanded={context.Tabs.tabs.attributes[index]["aria-expanded"]}
-    >
+    <div ref={store.ref} hidden={store.tab !== undefined ? store.tab.hidden : undefined} role="tabpanel">
       <Slot />
     </div>
   );

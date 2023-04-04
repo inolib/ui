@@ -1,6 +1,6 @@
 import { Menu } from "~/components/Menu/Menu";
 import { MenuButton } from "~/components/Menu/MenuButton";
-import { MenuItem } from "~/components/Menu/MenuItem";
-import { MenuItemList } from "~/components/Menu/MenuItemList";
-export { Menu, MenuButton, MenuItem, MenuItemList };
+import { MenuItemLink } from "~/components/Menu/MenuItemLink";
+import { MenuItems } from "~/components/Menu/MenuItems";
+export { Menu, MenuButton, MenuItemLink, MenuItems };
 //# sourceMappingURL=index.d.ts.map

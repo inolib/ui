@@ -1,4 +1,3 @@
-import type { Reference } from "~/types";
-export declare const tabQrl: import("@builder.io/qwik").QRL<(ref: Reference, to: string) => void>;
-export declare const useTab: (ref: Reference) => void;
+export declare const tabQrl: import("@builder.io/qwik").QRL<(to: string) => void>;
+export declare const useTab: () => void;
 //# sourceMappingURL=useTab.d.ts.map

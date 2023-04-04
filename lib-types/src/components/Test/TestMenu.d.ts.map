@@ -1,1 +1,1 @@
-{"version":3,"file":"TestMenu.d.ts","sourceRoot":"","sources":["../../../../src/components/Test/TestMenu.tsx"],"names":[],"mappings":"AAIA,eAAO,MAAM,WAAW,gDAAuD,CAAC;AAEhF,KAAK,QAAQ,GAAG;IACd,QAAQ,EAAE,SAAS,CAAC;CACrB,CAAC;AAEF,KAAK,SAAS,GAAG;IACf,MAAM,EAAE,OAAO,CAAC;IAChB,QAAQ,EAAE,OAAO,CAAC;CACnB,CAAC;AAEF,eAAO,MAAM,QAAQ,0CAgBnB,CAAC"}
+{"version":3,"file":"TestMenu.d.ts","sourceRoot":"","sources":["../../../../src/components/Test/TestMenu.tsx"],"names":[],"mappings":""}

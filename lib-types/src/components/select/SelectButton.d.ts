@@ -3,9 +3,11 @@ type SelectButtonProps = {
     readonly styles?: string;
 };
 export type SelectButtonStore = {
+    controls?: string;
     expanded: boolean;
+    readonly id: string;
     readonly ref: Reference;
-    slot: string;
+    slot?: string;
 };
 export declare const SelectButton: import("@builder.io/qwik").Component<SelectButtonProps>;
 export {};
