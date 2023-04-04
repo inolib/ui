@@ -9,9 +9,9 @@ import {
   useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
+import { nanoid } from "nanoid";
 
 import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "~/components/Select/Select";
-import { useTab } from "~/hooks/useTab";
 import type { Reference } from "~/types";
 
 type SelectButtonProps = {
@@ -19,9 +19,11 @@ type SelectButtonProps = {
 };
 
 export type SelectButtonStore = {
+  controls?: string;
   expanded: boolean;
+  readonly id: string;
   readonly ref: Reference;
-  slot: string;
+  slot?: string;
 };
 
 export const SelectButton = component$<SelectButtonProps>(({ styles }) => {
@@ -30,13 +32,11 @@ export const SelectButton = component$<SelectButtonProps>(({ styles }) => {
   const store = useStore<SelectButtonStore>(
     {
       expanded: false,
+      id: nanoid(),
       ref: useSignal<HTMLElement>(),
-      slot: "",
     },
     { deep: true }
   );
-
-  useTab(store.ref);
 
   useOn(
     "keyup",
@@ -83,17 +83,22 @@ export const SelectButton = component$<SelectButtonProps>(({ styles }) => {
       if (store.ref.value !== undefined) {
         store.slot = store.ref.value.innerHTML;
       }
+
+      if (context.SelectOptions !== undefined) {
+        store.controls = context.SelectOptions.id;
+      }
     },
     { strategy: "document-ready" }
   );
 
   return (
     <button
-      aria-controls={context.SelectOptionList?.id}
+      aria-controls={store.controls}
       aria-expanded={store.expanded}
       aria-haspopup="listbox"
       class={styles}
       disabled={context.Select.disabled}
+      id={store.id}
       preventdefault:click
       preventdefault:keydown
       preventdefault:keyup

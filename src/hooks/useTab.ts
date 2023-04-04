@@ -1,46 +1,62 @@
 import { $, useOn } from "@builder.io/qwik";
 
-import type { Reference } from "~/types";
+const selectors =
+  "a[href], area[href], audio[controls], button, form, iframe, input:not([type='hidden']), object, select, summary, textarea, video[controls], [contenteditable], [tabindex]";
 
-const tabbableElements = [
-  "a[href]:not(disabled):not(hidden):not([tabindex='-1'])",
-  "area[href]:not(disabled):not(hidden):not([tabindex='-1'])",
-  "audio[controls]:not(disabled):not(hidden):not([tabindex='-1'])",
-  "button:not(disabled):not(hidden):not([tabindex='-1'])",
-  "form:not(disabled):not(hidden):not([tabindex='-1'])",
-  "iframe:not(disabled):not(hidden):not([tabindex='-1'])",
-  "input:not([type='hidden']):not(disabled):not(hidden):not([tabindex='-1'])",
-  "object:not(disabled):not(hidden):not([tabindex='-1'])",
-  "select:not(disabled):not(hidden):not([tabindex='-1'])",
-  "summary:not(disabled):not(hidden):not([tabindex='-1'])",
-  "textarea:not(disabled):not(hidden):not([tabindex='-1'])",
-  "video[controls]:not(disabled):not(hidden):not([tabindex='-1'])",
-  "[contenteditable]:not(disabled):not(hidden):not([tabindex='-1'])",
-  "[tabindex]:not(disabled):not(hidden):not([tabindex='-1'])",
-].join(",");
+export const tabQrl = $((to: string) => {
+  const focused = document.activeElement;
 
-export const tabQrl = $((ref: Reference, to: string) => {
-  const elements = Array.from(document.querySelectorAll(tabbableElements));
-  const index = elements.findIndex((element) => element === ref.value);
+  const tabbables = Array.from(document.querySelectorAll(selectors)).filter((element) => {
+    let disabled = false;
+
+    switch (element.tagName) {
+      case "BUTTON": {
+        disabled = (element as HTMLButtonElement).disabled;
+        break;
+      }
+
+      case "INPUT": {
+        disabled = (element as HTMLInputElement).disabled;
+        break;
+      }
+
+      case "SELECT": {
+        disabled = (element as HTMLSelectElement).disabled;
+        break;
+      }
+
+      case "TEXTAREA": {
+        disabled = (element as HTMLTextAreaElement).disabled;
+        break;
+      }
+    }
+
+    const focusable = (element as HTMLElement).tabIndex > -1;
+    const visible = element.getClientRects().length > 0;
+
+    return !disabled && focusable && visible;
+  });
+
+  const index = tabbables.findIndex((element) => element === focused);
 
   switch (to) {
     case "next": {
-      if (index > -1 && index < elements.length - 1) {
-        (elements[index + 1] as HTMLElement).focus();
+      if (index > -1 && index < tabbables.length - 1) {
+        (tabbables[index + 1] as HTMLElement).focus();
       }
       break;
     }
 
     case "previous": {
       if (index > 0) {
-        (elements[index - 1] as HTMLElement).focus();
+        (tabbables[index - 1] as HTMLElement).focus();
       }
       break;
     }
   }
 });
 
-export const useTab = (ref: Reference) => {
+export const useTab = () => {
   useOn(
     "keydown",
     $(async (e) => {
@@ -48,7 +64,7 @@ export const useTab = (ref: Reference) => {
 
       switch (event.code) {
         case "Tab": {
-          await tabQrl(ref, !event.shiftKey ? "next" : "previous");
+          await tabQrl(!event.shiftKey ? "next" : "previous");
           break;
         }
       }

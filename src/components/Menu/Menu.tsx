@@ -1,53 +1,138 @@
-import {
-  $,
-  component$,
-  createContextId,
-  Slot,
-  useContextProvider,
-  useOn,
-  useSignal,
-  useStore,
-  type Signal,
-} from "@builder.io/qwik";
+import { $, component$, createContextId, Slot, useContextProvider, useOn, useStore } from "@builder.io/qwik";
 
-import { useComposite, type Composite } from "~/hooks/useComposite";
-import { useExpandable, type Expandable } from "~/hooks/useExpandable";
+import { type MenuButtonStore } from "~/components/Menu/MenuButton";
+import { type MenuItemLinkStore } from "~/components/Menu/MenuItemLink";
+import { type MenuItemsStore } from "~/components/Menu/MenuItems";
+import { useFocus } from "~/hooks/useFocus";
+import { useTab } from "~/hooks/useTab";
+import type { Reference } from "~/types";
 
-type Props = {
-  styles?: string;
-  value?: Value;
-};
+export const collapseQrl = $((context: MenuContext) => {
+  if (context.MenuButton !== undefined) {
+    context.MenuButton.expanded = false;
+  }
+});
 
-type Ref = Signal<HTMLElement | undefined>;
+export const expandQrl = $((context: MenuContext) => {
+  if (context.MenuButton !== undefined) {
+    context.MenuButton.expanded = true;
+  }
+});
 
-type Store = Composite &
-  Expandable & {
-    activated: Array<{ id: string; ref: Ref; value: Value }>;
-    controls: string;
-    trigger: Ref;
+export const focusQrl = $((context: MenuContext, ref: Reference) => {
+  context.Menu.focusable = ref;
+  context.Menu.focused = ref;
+});
+
+export const moveFocusQrl = $(async (context: MenuContext, to: string) => {
+  const predicate = (to: string) => {
+    switch (to) {
+      case "first:selected":
+      case "last:selected": {
+        return (item: MenuItemLinkStore) => item.selected;
+      }
+
+      case "next":
+      case "previous": {
+        return (item: MenuItemLinkStore) => item.ref === context.Menu.focusable;
+      }
+    }
+
+    return () => false;
   };
 
-export type Value = string | Record<string, boolean | number | string>;
+  if (context.MenuItemLink !== undefined) {
+    switch (to) {
+      case "first": {
+        if (context.MenuItemLink.length > 0) {
+          await focusQrl(context, context.MenuItemLink[0].ref);
+        }
+        break;
+      }
 
-export const MenuContext = createContextId<Store>("inolib/ui/contexts/Menu");
+      case "first:selected": {
+        const item = context.MenuItemLink.find(predicate(to));
 
-export const Menu = component$<Props>(({ styles }) => {
-  const store = useStore<Store>(
-    {
-      activated: [],
-      controls: "",
-      expanded: false,
-      focusable: useSignal<HTMLElement>(),
-      navigables: [],
-      trigger: useSignal<HTMLElement>(),
-    },
-    { deep: true }
-  );
+        if (item !== undefined) {
+          await focusQrl(context, item.ref);
+        } else {
+          await moveFocusQrl(context, "first");
+        }
 
-  const { collapse$ } = useExpandable(store);
-  const { focus$ } = useComposite(store);
+        break;
+      }
 
-  useContextProvider(MenuContext, store);
+      case "last": {
+        if (context.MenuItemLink.length > 0) {
+          await focusQrl(context, context.MenuItemLink[context.MenuItemLink.length - 1].ref);
+        }
+        break;
+      }
+
+      case "last:selected": {
+        const item = context.MenuItemLink.findLast(predicate(to));
+
+        if (item !== undefined) {
+          await focusQrl(context, item.ref);
+        } else {
+          await moveFocusQrl(context, "last");
+        }
+
+        break;
+      }
+
+      case "next": {
+        const index = context.MenuItemLink.findIndex(predicate(to));
+
+        if (index > -1 && index < context.MenuItemLink.length - 1) {
+          await focusQrl(context, context.MenuItemLink[index + 1].ref);
+        }
+
+        break;
+      }
+
+      case "previous": {
+        const index = context.MenuItemLink.findLastIndex(predicate(to));
+
+        if (index > 0) {
+          await focusQrl(context, context.MenuItemLink[index - 1].ref);
+        }
+
+        break;
+      }
+    }
+  }
+});
+
+export type MenuContext = {
+  Menu: MenuStore;
+  MenuButton?: MenuButtonStore;
+  MenuItemLink?: MenuItemLinkStore[];
+  MenuItems?: MenuItemsStore;
+};
+
+type MenuProps = {
+  readonly styles?: string;
+};
+
+type MenuStore = {
+  focusable?: Reference;
+  focused?: Reference;
+};
+
+export const contextId = createContextId<MenuContext>("inolib/ui/contexts/Menu");
+
+export const Menu = component$<MenuProps>(({ styles }) => {
+  const store = useStore<MenuStore>({}, { deep: true });
+
+  const context: MenuContext = {
+    Menu: store,
+  };
+
+  useContextProvider(contextId, context);
+
+  useFocus(store);
+  useTab();
 
   useOn(
     "keyup",
@@ -56,8 +141,10 @@ export const Menu = component$<Props>(({ styles }) => {
 
       switch (event.code) {
         case "Escape": {
-          await collapse$();
-          await focus$(store.trigger);
+          if (context.MenuButton !== undefined) {
+            await collapseQrl(context);
+            await focusQrl(context, context.MenuButton.ref);
+          }
           break;
         }
       }
@@ -65,7 +152,7 @@ export const Menu = component$<Props>(({ styles }) => {
   );
 
   return (
-    <div {...(styles !== undefined ? { class: styles } : {})}>
+    <div class={styles} preventdefault:keydown preventdefault:keyup>
       <Slot />
     </div>
   );

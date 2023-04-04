@@ -1,20 +1,38 @@
-import { $, component$, Slot, useContext, useOn, useSignal, useTask$ } from "@builder.io/qwik";
+import {
+  $,
+  component$,
+  Slot,
+  useContext,
+  useOn,
+  useSignal,
+  useStore,
+  useTask$,
+  useVisibleTask$,
+} from "@builder.io/qwik";
 
-import { MenuContext } from "~/components/Menu/Menu";
-import { useComposite } from "~/hooks/useComposite";
-import { useExpandable } from "~/hooks/useExpandable";
+import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "~/components/Menu/Menu";
+import type { Reference } from "~/types";
 
-type Props = {
-  styles?: string;
+type MenuButtonProps = {
+  readonly styles?: string;
 };
 
-export const MenuButton = component$<Props>(({ styles }) => {
-  const ref = useSignal<HTMLElement>();
+export type MenuButtonStore = {
+  controls?: string | undefined;
+  expanded: boolean;
+  readonly ref: Reference;
+};
 
-  const store = useContext(MenuContext);
+export const MenuButton = component$<MenuButtonProps>(({ styles }) => {
+  const context = useContext(contextId);
 
-  const { focus$, moveFocus$ } = useComposite(store);
-  const { collapse$, expand$ } = useExpandable(store);
+  const store = useStore<MenuButtonStore>(
+    {
+      expanded: false,
+      ref: useSignal<HTMLElement>(),
+    },
+    { deep: true }
+  );
 
   useOn(
     "keyup",
@@ -22,9 +40,12 @@ export const MenuButton = component$<Props>(({ styles }) => {
       const event = e as KeyboardEvent;
 
       switch (event.code) {
+        case "ArrowDown":
+        case "ArrowUp":
+        case "Enter":
         case "Space": {
-          await expand$();
-          await moveFocus$("first:selected");
+          await expandQrl(context);
+          await moveFocusQrl(context, event.code !== "ArrowUp" ? "first:selected" : "last:selected");
           break;
         }
       }
@@ -38,30 +59,42 @@ export const MenuButton = component$<Props>(({ styles }) => {
 
       if (event.detail > 0 && event.button === 0) {
         if (store.expanded) {
-          await collapse$();
-          await focus$(ref);
+          await collapseQrl(context);
+          await focusQrl(context, store.ref);
         } else {
-          await expand$();
-          await moveFocus$("first");
+          await expandQrl(context);
+          await moveFocusQrl(context, "first:selected");
         }
       }
     })
   );
 
   useTask$(() => {
-    store.focusable = ref;
-    store.trigger = ref;
+    context.MenuButton = store;
+    context.Menu.focusable = store.ref;
   });
+
+  useVisibleTask$(
+    () => {
+      if (context.MenuItems !== undefined) {
+        store.controls = context.MenuItems.id;
+      }
+    },
+    { strategy: "document-ready" }
+  );
 
   return (
     <button
       aria-controls={store.controls}
       aria-expanded={store.expanded}
-      ref={ref}
-      role="menu"
-      tabIndex={store.focusable === ref ? 0 : -1}
+      aria-haspopup="menu"
+      class={styles}
+      preventdefault:click
+      preventdefault:keydown
+      preventdefault:keyup
+      ref={store.ref}
+      tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
       type="button"
-      {...(styles !== undefined ? { class: styles } : {})}
     >
       <Slot />
     </button>
