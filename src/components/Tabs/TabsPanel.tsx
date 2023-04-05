@@ -31,7 +31,7 @@ export const TabsPanel = component$<TabsPanelProps>(({ id, styles }) => {
     }
 
     context.TabsPanel.push({
-      props: { id, styles },
+      props: { id },
       store,
     });
   });
