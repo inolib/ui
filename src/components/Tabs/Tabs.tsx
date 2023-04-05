@@ -1,7 +1,7 @@
 import { $, component$, createContextId, Slot, useContextProvider, useStore } from "@builder.io/qwik";
 
-import { TabsPanelStore } from "~/components/Tabs/TabsPanel";
-import { TabsTabStore } from "~/components/Tabs/TabsTab";
+import type { TabsPanelProps, TabsPanelStore } from "~/components/Tabs/TabsPanel";
+import type { TabsTabStore } from "~/components/Tabs/TabsTab";
 import { useFocus } from "~/hooks/useFocus";
 import { useTab } from "~/hooks/useTab";
 import type { Reference } from "~/types";
@@ -56,7 +56,10 @@ export const moveFocusQrl = $(async (context: TabsContext, to: string) => {
 export type TabsContext = {
   Tabs: TabsStore;
   TabsTab?: TabsTabStore[];
-  TabsPanel?: TabsPanelStore[];
+  TabsPanel?: {
+    props: TabsPanelProps;
+    store: TabsPanelStore;
+  }[];
 };
 
 type TabsProps = {

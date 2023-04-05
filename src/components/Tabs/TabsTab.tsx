@@ -1,4 +1,4 @@
-import { $, component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useSignal, useStore, useTask$, useVisibleTask$ } from "@builder.io/qwik";
 
 import { contextId, focusQrl, type TabsContext } from "~/components/Tabs/Tabs";
 import type { Reference } from "~/types";
@@ -10,7 +10,7 @@ type TabsTabProps = {
 };
 
 export type TabsTabStore = {
-  readonly controls: string;
+  controls: string;
   readonly ref: Reference;
   selected: boolean;
 };
@@ -49,6 +49,17 @@ export const TabsTab = component$<TabsTabProps>(({ controls, selected = false, s
       context.Tabs.focusable = store.ref;
     }
   });
+
+  useVisibleTask$(
+    () => {
+      const panel = context.TabsPanel?.find((panel) => panel.props.id === store.controls);
+
+      if (panel !== undefined) {
+        store.controls = panel.store.id;
+      }
+    },
+    { strategy: "document-ready" }
+  );
 
   return (
     <li>
