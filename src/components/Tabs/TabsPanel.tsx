@@ -1,18 +1,19 @@
-import { component$, Slot, useContext, useStore, useTask$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { TabsContext, type TabAttributes } from "~/components/tabs/Tabs";
+import { component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
+
+import { contextId } from "~/components/Tabs/Tabs";
 import type { Reference } from "~/types";
 
 type TabsPanelProps = {
-  id: string;
+  readonly id: string;
+  readonly styles?: string;
 };
 
 export type TabsPanelStore = {
   readonly ref: Reference;
-  tab?: TabAttributes | undefined;
 };
 
-export const TabsPanel = component$<TabsPanelProps>(({ id }) => {
-  const context = useContext(TabsContext);
+export const TabsPanel = component$<TabsPanelProps>(({ id, styles }) => {
+  const context = useContext(contextId);
 
   const store = useStore<TabsPanelStore>(
     {
@@ -28,16 +29,13 @@ export const TabsPanel = component$<TabsPanelProps>(({ id }) => {
     context.TabsPanel.push(store);
   });
 
-  useVisibleTask$(
-    () => {
-      store.tab = context.Tabs.tabs.attributes.find((tab) => tab.panelId === id);
-    },
-    { strategy: "document-ready" }
-  );
-
   return (
-    <div ref={store.ref} hidden={store.tab !== undefined ? store.tab.hidden : undefined} role="tabpanel">
-      <Slot />
-    </div>
+    <>
+      {context.TabsTab?.find((tab) => tab.selected)?.controls === id ? (
+        <div class={styles} id={id} ref={store.ref} role="tabpanel">
+          <Slot />
+        </div>
+      ) : null}
+    </>
   );
 });

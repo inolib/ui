@@ -1,88 +1,50 @@
-import { $, component$, Slot, createContextId, useStore, useContextProvider } from "@builder.io/qwik";
-import type { Reference } from "~/types";
+import { $, component$, createContextId, Slot, useContextProvider, useStore } from "@builder.io/qwik";
+
+import { TabsPanelStore } from "~/components/Tabs/TabsPanel";
+import { TabsTabStore } from "~/components/Tabs/TabsTab";
 import { useFocus } from "~/hooks/useFocus";
 import { useTab } from "~/hooks/useTab";
-import { TabsItemStore } from "~/components/tabs/TabsItem";
-import { TabsListItemStore } from "~/components/tabs/TabsListItem";
-import { TabsPanelStore } from "~/components/tabs/TabsPanel";
+import type { Reference } from "~/types";
 
-export const focusQrl = $((context: Contexts, ref: Reference) => {
-  context.Focus.focusable = ref;
-  context.Focus.focused = ref;
+export const focusQrl = $((context: TabsContext, ref: Reference) => {
+  context.Tabs.focusable = ref;
+  context.Tabs.focused = ref;
 });
 
-export const moveFocusQrl = $(async (context: Contexts, to: string) => {
-  const predicate = (to: string) => {
-    switch (to) {
-      // case "first:selected":
-      // case "last:selected": {
-      //   return (item: TabsItemStore) => item.selected;
-      // }
+export const moveFocusQrl = $(async (context: TabsContext, to: string) => {
+  const predicate = (tab: TabsTabStore) => tab.ref === context.Tabs.focusable;
 
-      case "next":
-      case "previous": {
-        return (item: TabsItemStore) => item.ref === context.Focus.focusable;
-      }
-    }
-
-    return () => false;
-  };
-
-  if (context.TabsItem !== undefined) {
+  if (context.TabsTab !== undefined) {
     switch (to) {
       case "first": {
-        if (context.TabsItem.length > 0) {
-          await focusQrl(context, context.TabsItem[0].ref);
+        if (context.TabsTab.length > 0) {
+          await focusQrl(context, context.TabsTab[0].ref);
         }
         break;
       }
-
-      // case "first:selected": {
-      //   const item = context.TabsItem.find(predicate(to));
-
-      //   if (item !== undefined) {
-      //     await focusQrl(context, item.ref);
-      //   } else {
-      //     await moveFocusQrl(context, "first");
-      //   }
-
-      //   break;
-      // }
 
       case "last": {
-        if (context.TabsItem.length > 0) {
-          await focusQrl(context, context.TabsItem[context.TabsItem.length - 1].ref);
+        if (context.TabsTab.length > 0) {
+          await focusQrl(context, context.TabsTab[context.TabsTab.length - 1].ref);
         }
         break;
       }
 
-      // case "last:selected": {
-      //   const item = context.TabsItem.findLast(predicate(to));
-
-      //   if (item !== undefined) {
-      //     await focusQrl(context, item.ref);
-      //   } else {
-      //     await moveFocusQrl(context, "last");
-      //   }
-
-      //   break;
-      // }
-
       case "next": {
-        const index = context.TabsItem.findIndex(predicate(to));
+        const index = context.TabsTab.findIndex(predicate);
 
-        if (index > -1 && index < context.TabsItem.length - 1) {
-          await focusQrl(context, context.TabsItem[index + 1].ref);
+        if (index > -1 && index < context.TabsTab.length - 1) {
+          await focusQrl(context, context.TabsTab[index + 1].ref);
         }
 
         break;
       }
 
       case "previous": {
-        const index = context.TabsItem.findLastIndex(predicate(to));
+        const index = context.TabsTab.findLastIndex(predicate);
 
         if (index > 0) {
-          await focusQrl(context, context.TabsItem[index - 1].ref);
+          await focusQrl(context, context.TabsTab[index - 1].ref);
         }
 
         break;
@@ -91,56 +53,37 @@ export const moveFocusQrl = $(async (context: Contexts, to: string) => {
   }
 });
 
-type Contexts = {
+export type TabsContext = {
   Tabs: TabsStore;
-  TabsListItem?: TabsListItemStore;
-  TabsItem?: TabsItemStore[];
+  TabsTab?: TabsTabStore[];
   TabsPanel?: TabsPanelStore[];
-  Focus: FocusStore;
 };
 
-type FocusStore = {
+type TabsProps = {
+  readonly styles?: string;
+};
+
+type TabsStore = {
   focusable?: Reference;
   focused?: Reference;
 };
 
-export type TabAttributes = {
-  tabId?: string;
-  panelId: string;
-  hidden: boolean;
-  "aria-selected": boolean;
-};
+export const contextId = createContextId<TabsContext>("inolib/ui/contexts/Tabs");
 
-type TabsStore = {
-  tabs: {
-    attributes: TabAttributes[];
-  };
-};
+export const Tabs = component$<TabsProps>(({ styles }) => {
+  const store = useStore<TabsStore>({}, { deep: true });
 
-export const TabsContext = createContextId<Contexts>("inolib/ui/contexts/Tabs");
-
-export const Tabs = component$(() => {
-  const store = useStore<FocusStore>({}, { deep: true });
-
-  const context: Contexts = {
-    Tabs: useStore<TabsStore>(
-      {
-        tabs: {
-          attributes: [],
-        },
-      },
-      { deep: true }
-    ),
-    Focus: store,
+  const context: TabsContext = {
+    Tabs: store,
   };
 
-  useContextProvider(TabsContext, context);
+  useContextProvider(contextId, context);
 
   useFocus(store);
   useTab();
 
   return (
-    <div preventdefault:keydown preventdefault:keyup>
+    <div class={styles} preventdefault:keydown preventdefault:keyup>
       <Slot />
     </div>
   );

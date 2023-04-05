@@ -1,24 +1,13 @@
-import { $, component$, Slot, useContext, useOn, useStore, useTask$ } from "@builder.io/qwik";
-import { nanoid } from "nanoid";
-import { moveFocusQrl } from "~/components/tabs/Tabs";
-import { TabsContext } from "~/components/tabs/Tabs";
+import { $, component$, Slot, useContext, useOn } from "@builder.io/qwik";
 
-type TabsListItemProps = {
+import { contextId, moveFocusQrl } from "~/components/Tabs/Tabs";
+
+type TabsTabsProps = {
   readonly styles?: string;
 };
 
-export type TabsListItemStore = {
-  readonly id: string;
-};
-
-export const TabsListItem = component$<TabsListItemProps>(({ styles }) => {
-  const context = useContext(TabsContext);
-  const store = useStore<TabsListItemStore>(
-    {
-      id: nanoid(),
-    },
-    { deep: true }
-  );
+export const TabsTabs = component$<TabsTabsProps>(({ styles }) => {
+  const context = useContext(contextId);
 
   useOn(
     "keydown",
@@ -58,13 +47,9 @@ export const TabsListItem = component$<TabsListItemProps>(({ styles }) => {
     })
   );
 
-  useTask$(() => {
-    context.TabsListItem = store;
-  });
-
   return (
     <>
-      <ul class={styles} id={store.id} preventdefault:keydown preventdefault:keyup role="tablist">
+      <ul class={styles} preventdefault:keydown preventdefault:keyup role="tablist">
         <Slot />
       </ul>
     </>

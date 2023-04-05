@@ -1,8 +1,12 @@
 import { component$, Slot } from "@builder.io/qwik";
 
-export const TabsPanels = component$(() => {
+type TabsPanelsProps = {
+  readonly styles?: string;
+};
+
+export const TabsPanels = component$<TabsPanelsProps>(({ styles }) => {
   return (
-    <div>
+    <div class={styles}>
       <Slot />
     </div>
   );
