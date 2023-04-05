@@ -58,8 +58,12 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
         role="menuitem"
         tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
         onKeyUp$={async (event) => {
-          // utiliser envent .keyCode pour faire un switch , keycode touche entree = 13 existe dans le système de Tabstab.
-          await navigate(href);
+          switch (event.keyCode) {
+            case 13: {
+              await navigate(href);
+              break;
+            }
+          }
         }}
       >
         <Slot />
