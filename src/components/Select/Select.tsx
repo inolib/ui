@@ -13,7 +13,7 @@ import {
 import { type SelectButtonStore } from "~/components/Select/SelectButton";
 import { type SelectLabelStore } from "~/components/Select/SelectLabel";
 import { type SelectOptionStore } from "~/components/Select/SelectOption";
-import { type SelectListboxStore } from "~/components/Select/SelectListbox";
+import { type SelectOptionsStore } from "~/components/Select/SelectOptions";
 import { useFocus } from "~/hooks/useFocus";
 import { useTab } from "~/hooks/useTab";
 import type { JSON, Reference } from "~/types";
@@ -122,7 +122,7 @@ export type SelectContext = {
   SelectButton?: SelectButtonStore;
   SelectLabel?: SelectLabelStore;
   SelectOption?: SelectOptionStore[];
-  SelectOptions?: SelectListboxStore;
+  SelectOptions?: SelectOptionsStore;
 };
 
 type SelectProps = {
