@@ -3,18 +3,18 @@ import { nanoid } from "nanoid";
 
 import { contextId, moveFocusQrl } from "~/components/Select/Select";
 
-type SelectOptionsProps = {
+type SelectListboxProps = {
   readonly styles?: string;
 };
 
-export type SelectOptionsStore = {
+export type SelectListboxStore = {
   readonly id: string;
 };
 
-export const SelectOptions = component$<SelectOptionsProps>(({ styles }) => {
+export const SelectListbox = component$<SelectListboxProps>(({ styles }) => {
   const context = useContext(contextId);
 
-  const store = useStore<SelectOptionsStore>(
+  const store = useStore<SelectListboxStore>(
     {
       id: nanoid(),
     },
