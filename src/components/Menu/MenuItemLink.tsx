@@ -1,7 +1,7 @@
-import { component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
+import { $, component$, Slot, useContext, useSignal, useStore, useTask$, useOn } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
-
 import { contextId } from "~/components/Menu/Menu";
+
 import type { Reference } from "~/types";
 
 type MenuItemLinkProps = {
@@ -23,6 +23,20 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
       selected: useLocation().url.pathname === (href.endsWith("/") ? href : `${href}/`),
     },
     { deep: true }
+  );
+
+  useOn(
+    "keyup",
+    $((e) => {
+      const event = e as KeyboardEvent;
+
+      switch (event.code) {
+        case "Enter": {
+          window.location.href = href;
+          break;
+        }
+      }
+    })
   );
 
   useTask$(() => {
