@@ -6,9 +6,12 @@ import { useFocus } from "~/hooks/useFocus";
 import { useTab } from "~/hooks/useTab";
 import type { Reference } from "~/types";
 
-export const focusQrl = $((context: TabsContext, ref: Reference) => {
+export const focusQrl = $((context: TabsContext, ref: Reference, moveFocus = true) => {
   context.Tabs.focusable = ref;
-  context.Tabs.focused = ref;
+
+  if (moveFocus) {
+    context.Tabs.focused = ref;
+  }
 });
 
 export const moveFocusQrl = $(async (context: TabsContext, to: string) => {

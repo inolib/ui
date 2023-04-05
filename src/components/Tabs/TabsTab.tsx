@@ -15,7 +15,7 @@ export type TabsTabStore = {
   selected: boolean;
 };
 
-export const selectQrl = $(async (context: TabsContext, store: TabsTabStore) => {
+export const selectQrl = $(async (context: TabsContext, store: TabsTabStore, moveFocus = true) => {
   const tab = context.TabsTab?.find((tab) => tab.selected);
 
   if (tab !== undefined) {
@@ -24,7 +24,7 @@ export const selectQrl = $(async (context: TabsContext, store: TabsTabStore) => 
 
   store.selected = true;
 
-  await focusQrl(context, store.ref);
+  await focusQrl(context, store.ref, moveFocus);
 });
 
 export const TabsTab = component$<TabsTabProps>(({ controls, selected = false, styles }) => {
@@ -43,19 +43,20 @@ export const TabsTab = component$<TabsTabProps>(({ controls, selected = false, s
     if (context.TabsTab === undefined) {
       context.TabsTab = [];
     }
-    context.TabsTab.push(store);
 
-    if (selected) {
-      context.Tabs.focusable = store.ref;
-    }
+    context.TabsTab.push(store);
   });
 
   useVisibleTask$(
-    () => {
+    async () => {
       const panel = context.TabsPanel?.find((panel) => panel.props.id === store.controls);
 
       if (panel !== undefined) {
         store.controls = panel.store.id;
+      }
+
+      if (selected) {
+        await selectQrl(context, store, false);
       }
     },
     { strategy: "document-ready" }
