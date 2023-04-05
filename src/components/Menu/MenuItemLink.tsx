@@ -1,5 +1,5 @@
-import { $, component$, Slot, useContext, useSignal, useStore, useTask$, useOn } from "@builder.io/qwik";
-import { useLocation } from "@builder.io/qwik-city";
+import { component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
+import { useLocation, useNavigate } from "@builder.io/qwik-city";
 import { contextId } from "~/components/Menu/Menu";
 
 import type { Reference } from "~/types";
@@ -25,19 +25,21 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
     { deep: true }
   );
 
-  useOn(
-    "keyup",
-    $((e) => {
-      const event = e as KeyboardEvent;
+  // useOn(
+  //   "keyup",
+  //   $((e) => {
+  //     const event = e as KeyboardEvent;
 
-      switch (event.code) {
-        case "Enter": {
-          window.location.href = href;
-          break;
-        }
-      }
-    })
-  );
+  //     switch (event.code) {
+  //       case "Enter": {
+  //         window.location.href = href;
+  //         break;
+  //       }
+  //     }
+  //   })
+  // );
+
+  const navigate = useNavigate();
 
   useTask$(() => {
     if (context.MenuItemLink === undefined) {
@@ -55,6 +57,10 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
         ref={store.ref}
         role="menuitem"
         tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
+        onKeyUp$={async (event) => {
+          // utiliser envent .keyCode pour faire un switch , keycode touche entree = 13 existe dans le système de Tabstab.
+          await navigate(href);
+        }}
       >
         <Slot />
       </a>
