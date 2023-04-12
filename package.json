@@ -7,20 +7,20 @@
     ".": {
       "import": "./lib/index.qwik.mjs",
       "require": "./lib/index.qwik.cjs",
-      "types": "./lib-types/src/index.d.ts"
+      "types": "./lib-types/index.d.ts"
     }
   },
   "main": "./lib/index.qwik.cjs",
   "module": "./lib/index.qwik.mjs",
-  "types": "./lib-types/src/index.d.ts",
+  "types": "./lib-types/index.d.ts",
   "files": [
-    "./lib",
-    "./lib-types"
+    "/lib/",
+    "/lib-types/"
   ],
   "scripts": {
     "build": "pnpm run build:types && pnpm run build:lib",
     "build:lib": "vite build --mode lib",
-    "build:types": "rimraf .cache ./lib-types && tsc",
+    "build:types": "tsc",
     "ci:build": "pnpm run build",
     "ci:format": "pnpm run format",
     "ci:lint": "pnpm run lint",
@@ -47,7 +47,7 @@
     "@types/node": "^18.15.11",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
-    "@vitest/coverage-c8": "^0.30.0",
+    "@vitest/coverage-c8": "^0.30.1",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-qwik": "^0.101.0",
@@ -59,6 +59,6 @@
     "rimraf": "^4.4.1",
     "typescript": "^5.0.4",
     "vite": "^4.2.1",
-    "vitest": "^0.30.0"
+    "vitest": "^0.30.1"
   }
 }
