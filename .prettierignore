@@ -1,7 +1,7 @@
-.cache/
-coverage/
-lib/
-lib-types/
-node_modules/
+/.cache/
+/coverage/
+/lib/
+/lib-types/
+/node_modules/
 
-pnpm-lock.yaml
+/pnpm-lock.yaml
