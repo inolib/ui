@@ -1,7 +1,7 @@
 import { component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
 import { useLocation, useNavigate } from "@builder.io/qwik-city";
-import { contextId } from "~/components/Menu/Menu";
 
+import { contextId } from "~/components/Menu/Menu";
 import type { Reference } from "~/types";
 
 type MenuItemLinkProps = {
@@ -25,20 +25,6 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
     { deep: true }
   );
 
-  // useOn(
-  //   "keyup",
-  //   $((e) => {
-  //     const event = e as KeyboardEvent;
-
-  //     switch (event.code) {
-  //       case "Enter": {
-  //         window.location.href = href;
-  //         break;
-  //       }
-  //     }
-  //   })
-  // );
-
   const navigate = useNavigate();
 
   useTask$(() => {
@@ -50,13 +36,10 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
   });
 
   return (
-    <li role="presentation" class={styles}>
+    <li class={styles} role="presentation">
       <a
         aria-current={store.selected ? "page" : undefined}
         href={href}
-        ref={store.ref}
-        role="menuitem"
-        tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
         onKeyUp$={async (event) => {
           switch (event.keyCode) {
             case 13: {
@@ -65,6 +48,9 @@ export const MenuItemLink = component$<MenuItemLinkProps>(({ href, styles }) => 
             }
           }
         }}
+        ref={store.ref}
+        role="menuitem"
+        tabIndex={store.ref === context.Menu.focusable ? 0 : -1}
       >
         <Slot />
       </a>
