@@ -22,7 +22,6 @@
     "build:lib": "vite build --mode lib",
     "build:types": "tsc",
     "ci:build": "pnpm run build",
-    "ci:format": "pnpm run format",
     "ci:lint": "pnpm run lint",
     "ci:test": "pnpm run test",
     "format": "pnpm run format:prettier && pnpm run format:jsdoc && pnpm run format:jsxattribute-sort && pnpm run format:packagejson && pnpm run format:sort-imports",
