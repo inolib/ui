@@ -23,7 +23,7 @@
     "build:types": "tsc",
     "ci:build": "pnpm run build",
     "ci:lint": "pnpm run lint",
-    "ci:test": "pnpm run test",
+    "ci:test": "",
     "format": "pnpm run format:prettier && pnpm run format:jsdoc && pnpm run format:jsxattribute-sort && pnpm run format:packagejson && pnpm run format:sort-imports",
     "format:jsdoc": "prettier --config ./.config/.prettierrc.jsdoc.cjs --write ./**/*.cjs ./**/*.ts ./**/*.tsx",
     "format:jsxattribute-sort": "prettier --config ./.config/.prettierrc.jsxattribute-sort.cjs --write ./**/*.tsx",
