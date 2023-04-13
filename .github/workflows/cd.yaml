@@ -6,7 +6,7 @@ on:
     types: [closed]
 
 jobs:
-  workflow:
+  continuous_deployment:
     name: Build and publish
 
     strategy:

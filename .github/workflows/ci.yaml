@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  workflow:
+  continuous_integration:
     name: Lint, test, and build
 
     strategy:
