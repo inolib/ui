@@ -1,6 +1,6 @@
 {
   "name": "@inolib/ui",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "UI component library",
   "type": "module",
   "exports": {
