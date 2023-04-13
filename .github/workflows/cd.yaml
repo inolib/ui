@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [18, 19]
+        node: [19]
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
