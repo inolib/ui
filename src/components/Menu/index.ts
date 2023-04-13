@@ -1,6 +1,6 @@
-import { Menu } from "~/components/Menu/Menu";
-import { MenuButton } from "~/components/Menu/MenuButton";
-import { MenuItemLink } from "~/components/Menu/MenuItemLink";
-import { MenuItems } from "~/components/Menu/MenuItems";
+import { Menu } from "./Menu";
+import { MenuButton } from "./MenuButton";
+import { MenuItemLink } from "./MenuItemLink";
+import { MenuItems } from "./MenuItems";
 
 export { Menu, MenuButton, MenuItemLink, MenuItems };

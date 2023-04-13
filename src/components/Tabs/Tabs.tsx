@@ -1,10 +1,10 @@
 import { $, component$, createContextId, Slot, useContextProvider, useStore } from "@builder.io/qwik";
 
-import type { TabsPanelProps, TabsPanelStore } from "~/components/Tabs/TabsPanel";
-import type { TabsTabStore } from "~/components/Tabs/TabsTab";
-import { useFocus } from "~/hooks/useFocus";
-import { useTab } from "~/hooks/useTab";
-import type { Reference } from "~/types";
+import type { TabsPanelProps, TabsPanelStore } from "./TabsPanel";
+import type { TabsTabStore } from "./TabsTab";
+import { useFocus } from "../../hooks/useFocus";
+import { useTab } from "../../hooks/useTab";
+import type { Reference } from "../../types";
 
 export const focusQrl = $((context: TabsContext, ref: Reference, moveFocus = true) => {
   context.Tabs.focusable = ref;

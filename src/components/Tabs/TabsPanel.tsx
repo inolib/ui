@@ -1,8 +1,8 @@
 import { component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { contextId } from "~/components/Tabs/Tabs";
-import type { Reference } from "~/types";
+import { contextId } from "./Tabs";
+import type { Reference } from "../../types";
 
 export type TabsPanelProps = {
   readonly id: string;

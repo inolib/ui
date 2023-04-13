@@ -1,6 +1,6 @@
 import { $, component$, Slot, useContext, useOn } from "@builder.io/qwik";
 
-import { contextId, moveFocusQrl } from "~/components/Tabs/Tabs";
+import { contextId, moveFocusQrl } from "./Tabs";
 
 type TabsTabsProps = {
   readonly styles?: string;

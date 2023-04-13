@@ -1,6 +1,6 @@
 import { useVisibleTask$ } from "@builder.io/qwik";
 
-import { Reference } from "~/types";
+import { Reference } from "../types";
 
 type Focus = {
   focused?: Reference;

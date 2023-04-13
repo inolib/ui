@@ -10,8 +10,8 @@ import {
   useVisibleTask$,
 } from "@builder.io/qwik";
 
-import { contextId, focusQrl, type SelectContext } from "~/components/Select/Select";
-import type { JSON, Reference } from "~/types";
+import { contextId, focusQrl, type SelectContext } from "./Select";
+import type { JSON, Reference } from "../../types";
 
 type SelectOptionProps = {
   readonly disabled?: boolean;

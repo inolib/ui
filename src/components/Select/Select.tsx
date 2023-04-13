@@ -10,13 +10,13 @@ import {
   type QRL,
 } from "@builder.io/qwik";
 
-import { type SelectButtonStore } from "~/components/Select/SelectButton";
-import { type SelectLabelStore } from "~/components/Select/SelectLabel";
-import { type SelectOptionStore } from "~/components/Select/SelectOption";
-import { type SelectOptionsStore } from "~/components/Select/SelectOptions";
-import { useFocus } from "~/hooks/useFocus";
-import { useTab } from "~/hooks/useTab";
-import type { JSON, Reference } from "~/types";
+import { type SelectButtonStore } from "./SelectButton";
+import { type SelectLabelStore } from "./SelectLabel";
+import { type SelectOptionStore } from "./SelectOption";
+import { type SelectOptionsStore } from "./SelectOptions";
+import { useFocus } from "../../hooks/useFocus";
+import { useTab } from "../../hooks/useTab";
+import type { JSON, Reference } from "../../types";
 
 export const collapseQrl = $((context: SelectContext) => {
   if (context.SelectButton !== undefined) {
