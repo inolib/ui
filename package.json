@@ -7,12 +7,12 @@
     ".": {
       "import": "./lib/index.qwik.mjs",
       "require": "./lib/index.qwik.cjs",
-      "types": "./lib-types/index.d.ts"
+      "types": "./lib-types/src/index.d.ts"
     }
   },
   "main": "./lib/index.qwik.cjs",
   "module": "./lib/index.qwik.mjs",
-  "types": "./lib-types/index.d.ts",
+  "types": "./lib-types/src/index.d.ts",
   "files": [
     "/lib/",
     "/lib-types/"
