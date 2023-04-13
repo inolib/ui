@@ -1,8 +1,8 @@
 import { component$, Slot, useContext, useSignal, useStore, useTask$ } from "@builder.io/qwik";
 import { useLocation, useNavigate } from "@builder.io/qwik-city";
 
-import { contextId } from "~/components/Menu/Menu";
-import type { Reference } from "~/types";
+import { contextId } from "./Menu";
+import type { Reference } from "../../types";
 
 type MenuItemLinkProps = {
   readonly href: string;

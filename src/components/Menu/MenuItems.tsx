@@ -1,7 +1,7 @@
 import { $, component$, Slot, useContext, useOn, useStore, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { contextId, moveFocusQrl } from "~/components/Menu/Menu";
+import { contextId, moveFocusQrl } from "./Menu";
 
 type MenuItemsProps = {
   readonly styles?: string;

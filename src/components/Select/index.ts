@@ -1,7 +1,7 @@
-import { Select } from "~/components/Select/Select";
-import { SelectButton } from "~/components/Select/SelectButton";
-import { SelectLabel } from "~/components/Select/SelectLabel";
-import { SelectOption } from "~/components/Select/SelectOption";
-import { SelectOptions } from "~/components/Select/SelectOptions";
+import { Select } from "./Select";
+import { SelectButton } from "./SelectButton";
+import { SelectLabel } from "./SelectLabel";
+import { SelectOption } from "./SelectOption";
+import { SelectOptions } from "./SelectOptions";
 
 export { Select, SelectButton, SelectLabel, SelectOption, SelectOptions };

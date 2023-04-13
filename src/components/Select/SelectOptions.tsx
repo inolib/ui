@@ -1,7 +1,7 @@
 import { $, component$, Slot, useContext, useOn, useStore, useTask$ } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { contextId, moveFocusQrl } from "~/components/Select/Select";
+import { contextId, moveFocusQrl } from "./Select";
 
 type SelectOptionsProps = {
   readonly styles?: string;

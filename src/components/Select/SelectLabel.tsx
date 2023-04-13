@@ -1,6 +1,6 @@
 import { component$, Slot, useContext, useStore, useTask$, useVisibleTask$ } from "@builder.io/qwik";
 
-import { contextId } from "~/components/Select/Select";
+import { contextId } from "./Select";
 
 type SelectLabelProps = {
   styles?: string;
