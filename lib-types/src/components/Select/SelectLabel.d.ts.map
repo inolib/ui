@@ -1,1 +1,0 @@
-{"version":3,"file":"SelectLabel.d.ts","sourceRoot":"","sources":["../../../../src/components/Select/SelectLabel.tsx"],"names":[],"mappings":"AAIA,KAAK,gBAAgB,GAAG;IACtB,MAAM,CAAC,EAAE,MAAM,CAAC;CACjB,CAAC;AAEF,MAAM,MAAM,gBAAgB,GAAG;IAC7B,GAAG,CAAC,EAAE,MAAM,CAAC;CACd,CAAC;AAEF,eAAO,MAAM,WAAW,wDAuBtB,CAAC"}
