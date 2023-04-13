@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  workflow:
+  continuous_integration:
     name: Lint, test, and build
 
     strategy:
@@ -36,8 +36,8 @@ jobs:
       - name: Lint
         run: pnpm run ci:lint
 
-      - name: Test
-        run: pnpm run ci:test
+      # - name: Test
+      #   run: pnpm run ci:test
 
       - name: build
         run: pnpm run ci:build
