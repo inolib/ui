@@ -11,8 +11,9 @@ import {
 } from "@builder.io/qwik";
 import { nanoid } from "nanoid";
 
-import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "./Select";
 import type { Reference } from "../../types";
+
+import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "./Select";
 
 type SelectButtonProps = {
   readonly styles?: string;

@@ -10,8 +10,9 @@ import {
   useVisibleTask$,
 } from "@builder.io/qwik";
 
-import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "./Menu";
 import type { Reference } from "../../types";
+
+import { collapseQrl, contextId, expandQrl, focusQrl, moveFocusQrl } from "./Menu";
 
 type MenuButtonProps = {
   readonly styles?: string;

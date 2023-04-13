@@ -1,7 +1,8 @@
 import { $, component$, Slot, useContext, useSignal, useStore, useTask$, useVisibleTask$ } from "@builder.io/qwik";
 
-import { contextId, focusQrl, type TabsContext } from "./Tabs";
 import type { Reference } from "../../types";
+
+import { contextId, focusQrl, type TabsContext } from "./Tabs";
 
 type TabsTabProps = {
   readonly controls: string;
