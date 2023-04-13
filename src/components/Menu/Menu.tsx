@@ -1,11 +1,12 @@
 import { $, component$, createContextId, Slot, useContextProvider, useOn, useStore } from "@builder.io/qwik";
 
-import { type MenuButtonStore } from "./MenuButton";
-import { type MenuItemLinkStore } from "./MenuItemLink";
-import { type MenuItemsStore } from "./MenuItems";
 import { useFocus } from "../../hooks/useFocus";
 import { useTab } from "../../hooks/useTab";
 import type { Reference } from "../../types";
+
+import { type MenuButtonStore } from "./MenuButton";
+import { type MenuItemLinkStore } from "./MenuItemLink";
+import { type MenuItemsStore } from "./MenuItems";
 
 export const collapseQrl = $((context: MenuContext) => {
   if (context.MenuButton !== undefined) {
