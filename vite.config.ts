@@ -8,7 +8,7 @@ export default defineConfig(() => {
     build: {
       lib: {
         entry: "./src/index.ts",
-        fileName: (format) => `index.qwik.${format === "es" ? "mjs" : "cjs"}`,
+        fileName: (format) => `index.${format === "es" ? "mjs" : "cjs"}`,
         formats: ["es", "cjs"],
       },
     },

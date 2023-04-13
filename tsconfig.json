@@ -1,13 +1,14 @@
 {
   "include": ["./src"],
   "compilerOptions": {
-    "composite": true,
+    "declaration": true,
     "declarationDir": "./lib-types",
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
+    "incremental": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@builder.io/qwik",

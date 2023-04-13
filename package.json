@@ -5,14 +5,14 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./lib/index.qwik.mjs",
-      "require": "./lib/index.qwik.cjs",
-      "types": "./lib-types/src/index.d.ts"
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.cjs",
+      "types": "./lib-types/index.d.ts"
     }
   },
-  "main": "./lib/index.qwik.cjs",
-  "module": "./lib/index.qwik.mjs",
-  "types": "./lib-types/src/index.d.ts",
+  "main": "./lib/index.cjs",
+  "module": "./lib/index.mjs",
+  "types": "./lib-types/index.d.ts",
   "files": [
     "/lib/",
     "/lib-types/"
@@ -20,7 +20,7 @@
   "scripts": {
     "build": "pnpm run build:types && pnpm run build:lib",
     "build:lib": "vite build --mode lib",
-    "build:types": "rimraf ./.cache ./lib-types && tsc",
+    "build:types": "tsc",
     "ci:build": "pnpm run build",
     "ci:format": "pnpm run format",
     "ci:lint": "pnpm run lint",
@@ -55,7 +55,6 @@
     "prettier-plugin-jsdoc": "^0.4.2",
     "prettier-plugin-jsxattribute-sort": "^1.0.1",
     "prettier-plugin-packagejson": "^2.4.3",
-    "rimraf": "^4.4.1",
     "typescript": "^5.0.4",
     "vite": "^4.2.1",
     "vitest": "^0.30.1"
